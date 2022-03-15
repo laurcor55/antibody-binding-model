@@ -20,11 +20,14 @@ def get_R(theta, phi, eta):
   return np.matmul(np.matmul(R_eta, R_phi), R_theta)
 
 def update_lines(num, dataLines, lines):
-    for line, data in zip(lines, dataLines):
-        # NOTE: there is no .set_data() for 3 dim data...
-        line.set_data(data[0:2, :num])
-        line.set_3d_properties(data[2, :num])
-    return lines
+  for line, data in zip(lines, dataLines):
+    # NOTE: there is no .set_data() for 3 dim data...
+    x = np.array([0, data[0:2, :num]])
+    print(x.shape)
+    print(data[0:2, :num].shape)
+    line.set_data(data[0:2, :num])
+    line.set_3d_properties(data[2, :num])
+  return lines
 
 
 
@@ -34,30 +37,39 @@ class Reaction:
     self.t_steps = t_steps
     self.time = 0
     self.progress_reaction()
-    self.make_animation()
+    self.make_animation_2()
   
   def make_animation(self):
     self.fig = plt.figure()
     self.ax = p3.Axes3D(self.fig)
     data = [np.rot90(np.asarray(molecule.dock_offsets)) for molecule in self.molecules]
-    lines = [self.ax.plot(dat[0, 0:1], dat[1, 0:1], dat[2, 0:1])[0] for dat in data]
+    #lines = [self.ax.plot(dat[0, 0:1], dat[1, 0:1], dat[2, 0:1])[0] for dat in data]
+    lines = [self.ax.plot([], [], [])[0] for _ in data]
     self.ax.set_xlim3d(-5, 5)
     self.ax.set_ylim3d(-5, 5)
     self.ax.set_zlim3d(-5, 5)
-    line_ani = animation.FuncAnimation(self.fig, update_lines, 25, fargs=(data, lines), interval=50, blit=False)
+    line_ani = animation.FuncAnimation(self.fig, update_lines, self.t_steps, fargs=(data, lines), interval=50, blit=True)
     plt.show()
     
   def progress_reaction(self):
     for ii in range(self.t_steps):
       self.move_molecules()
 
-  def make_line(self):
-    for molecule in self.molecules:
-      x = np.array([molecule.location[0], molecule.dock_offset[0]])
-      y = np.array([molecule.location[1], molecule.dock_offset[1]])
-      z = np.array([molecule.location[2], molecule.dock_offset[2]])
-      line = self.ax.plot3D(x, y, z)
-    return(line)
+  def make_animation_2(self):
+    self.fig = plt.figure()
+    self.ax = p3.Axes3D(self.fig)
+    for t_step in range(self.t_steps):
+      self.ax.clear()
+      self.ax.set_xlim3d(-5, 5)
+      self.ax.set_ylim3d(-5, 5)
+      self.ax.set_zlim3d(-5, 5)
+      for molecule in self.molecules:
+        x = np.array([0, molecule.dock_offsets[t_step][0]])
+        y = np.array([0, molecule.dock_offsets[t_step][1]])
+        z = np.array([0, molecule.dock_offsets[t_step][2]])
+        self.ax.plot3D(x, y, z)
+      plt.pause(0.1)
+    plt.show()
   
   def move_molecules(self):
     for molecule in self.molecules:
@@ -69,8 +81,7 @@ class Ligand:
     self.location = np.array([0, 0, 0])
     self.R = get_R(np.random.uniform()*2*np.pi, np.random.uniform()*np.pi, np.random.uniform()*2*np.pi)
     self.dock_offset = np.matmul(np.array([0, 0, 1]), self.R) 
-    self.t_step = 0
-    self.dock_offsets = []
+    self.dock_offsets = [self.dock_offset]
   
   def move(self):
     D = 136e6 # nm2/s
@@ -101,5 +112,5 @@ class Ligand:
 
     
 t_steps = 100
-molecules = [Ligand()]
+molecules = [Ligand(), Ligand()]
 Reaction(molecules, t_steps)
