@@ -58,27 +58,29 @@ class Reaction:
   def make_animation_2(self):
     self.fig = plt.figure()
     self.ax = p3.Axes3D(self.fig)
+    limits = 50
     for t_step in range(self.t_steps):
       self.ax.clear()
-      self.ax.set_xlim3d(-5, 5)
-      self.ax.set_ylim3d(-5, 5)
-      self.ax.set_zlim3d(-5, 5)
+      self.ax.set_xlim3d(-limits, limits)
+      self.ax.set_ylim3d(-limits, limits)
+      self.ax.set_zlim3d(-limits, limits)
       for molecule in self.molecules:
-        x = np.array([0, molecule.dock_offsets[t_step][0]])
-        y = np.array([0, molecule.dock_offsets[t_step][1]])
-        z = np.array([0, molecule.dock_offsets[t_step][2]])
+        x = np.array([molecule.locations[t_step][0], molecule.locations[t_step][0] + molecule.dock_offsets[t_step][0]])
+        y = np.array([molecule.locations[t_step][1], molecule.locations[t_step][1] + molecule.dock_offsets[t_step][1]])
+        z = np.array([molecule.locations[t_step][2], molecule.locations[t_step][2] + molecule.dock_offsets[t_step][2]])
         self.ax.plot3D(x, y, z)
       plt.pause(0.1)
     plt.show()
   
   def move_molecules(self):
     for molecule in self.molecules:
-     # molecule.move()
+      molecule.move()
       molecule.rotate()
 
 class Ligand:
   def __init__(self):
-    self.location = np.array([0, 0, 0])
+    self.location = np.zeros(3)
+    self.locations = [self.location.copy()]
     self.R = get_R(np.random.uniform()*2*np.pi, np.random.uniform()*np.pi, np.random.uniform()*2*np.pi)
     self.dock_offset = np.matmul(np.array([0, 0, 1]), self.R) 
     self.dock_offsets = [self.dock_offset]
@@ -87,10 +89,11 @@ class Ligand:
     D = 136e6 # nm2/s
     dt = 10*1e-9 # s
     S = math.sqrt(2*D*dt)
-    self.location['x'] += S*np.random.normal()
-    self.location['y'] += S*np.random.normal()
-    self.location['z'] += S*np.random.normal()
-    # Need to multiply S * np.random.normal by R
+    self.location[0] += S*np.random.normal()
+    self.location[1] += S*np.random.normal()
+    self.location[2] += S*np.random.normal()
+    self.locations.append(self.location.copy())
+    print(self.locations)
 
   def rotate(self):
     D_r = 3.16e7 #/s
@@ -105,12 +108,9 @@ class Ligand:
     self.R = np.matmul(self.R, R)
     self.dock_offset = np.matmul(self.R, self.dock_offset)
     self.dock_offsets.append(self.dock_offset)
-   # print('---')
-   # print(self.location)
-   # print(self.dock_offset)
-   # print(np.linalg.norm(self.dock_offset))
+
 
     
-t_steps = 100
+t_steps = 50
 molecules = [Ligand(), Ligand()]
 Reaction(molecules, t_steps)
