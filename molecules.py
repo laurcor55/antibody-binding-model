@@ -14,7 +14,7 @@ def get_R(theta, phi, eta):
     [0, np.cos(eta), -np.sin(eta)], \
     [0, np.sin(eta), np.cos(eta)]])    
   
-  return np.matmul(np.matmul(R_eta, R_phi), R_theta)
+  return np.dot(np.dot(R_eta, R_phi), R_theta)
 
 class Molecule:
   def __init__(self, location, radius):
@@ -23,42 +23,40 @@ class Molecule:
     self.radius = radius
     self.locations = [self.location.copy()]
     self.R = get_R(np.random.uniform()*2*np.pi, np.random.uniform()*np.pi, np.random.uniform()*2*np.pi)
+    self.D = 1.35e-6 / (100**2) # m2/s
+    self.D_r = 3.16e7 #/s
     self.dock_offset = np.matmul(np.array([0, 0, radius]), self.R) 
     self.dock_locations = [self.dock_offset + self.location]
   
-  def move(self):
-    D = 1.36e-6 / (100**2) * (10**10)**2# angstrom2/s
-    dt = 10*1e-9 # s
+  def attempt_move(self, dt):
+    D = self.D * (10**10)**2# angstrom2/s
     S = math.sqrt(2*D*dt)
-    self.location[0] += S*np.random.normal()
-    self.location[1] += S*np.random.normal()
-    self.location[2] += S*np.random.normal()
-    if np.any((self.location > 160)|(self.location < 0)):
-      #self.location = np.random.randint(0, 160, 3).astype(float)
-      self.location = np.array([50, 50, 50], float)
-      self.dock_location = self.dock_offset + self.location
-    self.locations.append(self.location.copy())
+    nums = np.random.normal(scale=1, size=3)
+    offset = np.multiply(S, nums)
+    self.new_location = np.add(self.location, offset)
 
-  def rotate(self):
-    D_r = 3.16e7 #/s
-    dt = 10*1e-9 # s
-    S = math.sqrt(2*D_r*dt)
+  def move(self):
+    self.location = self.new_location
+    self.locations.append(self.location.copy())    
+
+  def rotate(self, dt):
+    S = math.sqrt(2*self.D_r*dt)
 
     delta_eta = S * np.random.normal()
     delta_phi = S * np.random.normal()
     delta_theta = S * np.random.normal()
 
     R = get_R(delta_theta, delta_phi, delta_eta)
-    self.R = np.matmul(self.R, R)
-    self.dock_offset = np.matmul(self.R, self.dock_offset)
+    self.R = np.dot(self.R, R)
+    self.dock_offset = np.dot(self.R, self.dock_offset)
     self.dock_location = self.dock_offset + self.location
-    self.dock_locations.append(self.dock_location)
+    self.dock_locations.append(self.dock_location.copy())
   
   def set_id(self, id):
     self.id = id
 
   def plot(self, ax, t_step):
-    limits = 100
+    limits = 200
     ax.set_xlim3d(-limits, limits)
     ax.set_ylim3d(-limits, limits)
     ax.set_zlim3d(-limits, limits)
@@ -83,15 +81,24 @@ class Substrate(Molecule):
   def hellow(self):
     print('hi')
   
-  def calculate_ligand_distances(self, ligands):
+  def calculate_ligand_distances(self, ligands, rend):
+    distance_min = 10000
+    D_ligand = self.D
     for ligand in ligands:
       distance = np.linalg.norm(self.dock_location - ligand.dock_location)
       if distance < 2:
         self.binding_partner = ligand.id
         ligand.binding_partner = self.id
-      elif distance > 200:
+        break
+      distance = np.linalg.norm(self.location - ligand.location)
+      if distance < distance_min:
+        distance_min = distance
+        D_ligand = ligand.D
+      if distance > rend:
         self.binding_partner = -1
-        #ligand.location = np.array([50, 50, 50], float)
-        #self.location = np.array([50, 50, 50+42], float)
-
+        break
+    D = D_ligand + self.D
+    distance = distance_min *1e-10 # meters
+    dt = 1/(12*D)*(distance/5)**2
+    return dt
         
