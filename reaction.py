@@ -15,7 +15,7 @@ class Reaction:
     for molecule in self.molecules:
       molecule.set_id(id)
       id += 1
-    self.t_step = 0
+    self.t_step = 1
     self.time = 0
     self.progress_reaction()
 
@@ -44,11 +44,13 @@ class Reaction:
   def show_animation(self):
     self.fig = plt.figure()
     self.ax = p3.Axes3D(self.fig)
+    print(self.t_step)
+    print(len(molecules[0].dock_locations_over_time))
     for t_step in range(self.t_step):
       self.ax.clear()
       for molecule in self.molecules:
         molecule.plot(self.ax, t_step)
-      plt.pause(0.1)
+      plt.pause(0.01)
     plt.show()
 
   def step_reaction(self):
@@ -66,6 +68,7 @@ class Reaction:
     
 
   def check_overlaps(self):
+    self.overlap = False
     n = len(self.molecules)
     for ii in range(n-1):
       for jj in range(ii+1, n):
@@ -75,38 +78,37 @@ class Reaction:
           if distance < double_radius:
             self.overlap = True
             break
-          #while distance < double_radius:
-          #  self.molecules[ii].new_location += (self.molecules[ii].location - self.molecules[ii].#new_location)/10
-          #  self.molecules[jj].new_location += (self.molecules[jj].location - self.molecules[jj].new_location)/10
-          #  distance = np.linalg.norm(self.molecules[ii].new_location - self.molecules[jj].new_location)
-    self.overlap = False
             
 
 def scientific(input):
   output = "{:e}".format(input)
   return output
 
-radius = 18
-total_count = 5000
-rstart = 42
-rend = 200
+radius = 18 # angstroms
+total_count = 5
+rstart = 42 #angstroms
+rend = 200 #angstroms
 binding_count = 0
-time = np.zeros(total_count)
-for kk in range(total_count):
+#for kk in range(total_count):
+kk = 0
+while binding_count < 1:
   molecules = [mol.Ligand(np.array([50, 50, 50], float), radius), mol.Substrate(np.array([50, 50, 50+rstart], float), radius)]
   reaction = Reaction(molecules, rend)
   binding_count += reaction.binding
-  time[kk] = reaction.time
   if kk % 10 ==0:
     print(str(kk) + ' of ' + str(total_count))
-#reaction.show_animation()
+  kk += 1
+print(molecules[0])
+print(molecules[1])
+
+reaction.show_animation()
 print(binding_count)
 p = binding_count/total_count
 print(p)
 
-D = 1.36e-6 / (100**2)
-b = rstart*1e-10
-c = rend * 1e-10
+D = molecules[0].D + molecules[1].D
+b = rstart*1e-10 # meters
+c = rend * 1e-10 #meters
 NA = 6.022e23
 
 k_d_b = 4*np.pi*b*D
