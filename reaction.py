@@ -44,8 +44,6 @@ class Reaction:
   def show_animation(self):
     self.fig = plt.figure()
     self.ax = p3.Axes3D(self.fig)
-    print(self.t_step)
-    print(len(molecules[0].dock_locations_over_time))
     for t_step in range(self.t_step):
       self.ax.clear()
       for molecule in self.molecules:
@@ -78,6 +76,7 @@ class Reaction:
           if distance < double_radius:
             self.overlap = True
             break
+    
             
 
 def scientific(input):
@@ -85,7 +84,7 @@ def scientific(input):
   return output
 
 radius = 18 # angstroms
-total_count = 5
+total_count = 50000
 rstart = 42 #angstroms
 rend = 200 #angstroms
 binding_count = 0
@@ -96,10 +95,9 @@ while binding_count < 1:
   reaction = Reaction(molecules, rend)
   binding_count += reaction.binding
   if kk % 10 ==0:
-    print(str(kk) + ' of ' + str(total_count))
+    print(str(kk) + ' of ' + str(total_count) + ', ' + str(binding_count) + ' bound')
   kk += 1
-print(molecules[0])
-print(molecules[1])
+
 
 reaction.show_animation()
 print(binding_count)

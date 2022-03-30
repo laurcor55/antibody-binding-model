@@ -27,13 +27,12 @@ class Molecule:
     self.D_r = 3.16e7 #/s
     self.dock_offsets = [np.dot(dock_offset, self.R) for dock_offset in self.dock_offsets]
     self.dock_locations = [dock_offset + self.location for dock_offset in self.dock_offsets]
-    self.dock_locations_over_time = [self.dock_locations]
+    self.dock_locations_over_time = [self.dock_locations.copy()]
   
   def __repr__(self):
     x = 'hi \n' 
     x += 'center: ' + str(self.location) + '\n'
     x += 'dock locations: ' + str(self.dock_locations) + '\n'
-    x += 'dock locations: ' + str(self.dock_locations_over_time[-2]) + '\n'
     return x
   
   def attempt_move(self, dt):
@@ -67,7 +66,7 @@ class Molecule:
     ax.set_xlim3d(-limits, limits)
     ax.set_ylim3d(-limits, limits)
     ax.set_zlim3d(-limits, limits)
-    colors = ['b', 'g', 'r']
+    colors = ['b', 'g', 'r', 'y']
     ii = 0
     for dock_locations_over_time in self.dock_locations_over_time[t_step]:
       x = np.array([self.location_over_time[t_step][0], dock_locations_over_time[0]])
@@ -84,25 +83,25 @@ class Molecule:
 
 class Ligand(Molecule):
   def __init__(self, location, radius):
-    self.dock_offsets = [np.array([-8.5, 8.5, radius]), np.array([8.5, 8.5, radius]), np.array([-8.5, -8.5, radius])]
+    self.dock_offsets = [np.array([-8.5, 8.5, radius]), np.array([8.5, 8.5, radius]), np.array([-8.5, -8.5, radius]), np.array([8.5, -8.5, radius])]
     super().__init__(location, radius)
 
 class Substrate(Molecule):
   def __init__(self, location, radius):
-    self.dock_offsets = [np.array([8.5, 8.5, radius]), np.array([-8.5, 8.5, radius]), np.array([8.5, -8.5, radius])]
+    self.dock_offsets =[np.array([8.5, 8.5, radius]), np.array([-8.5, 8.5, radius]), np.array([8.5, -8.5, radius]), np.array([-8.5, -8.5, radius])]
     super().__init__(location, radius)
   
   def calculate_ligand_distances(self, ligands, rend):
     distance_min = 10000
-    D_ligand = self.D
+    D_ligand = ligands[0].D
     for ligand in ligands:
       distances = [np.linalg.norm(substrate_dock_location - ligand_dock_location) for substrate_dock_location, ligand_dock_location in zip(self.dock_locations, ligand.dock_locations)]
-
-      if all(distance < 10 for distance in distances):
+      close_docks = sum(distance < 2 for distance in distances)
+      if close_docks >= 3:
         self.binding_partner = ligand.id
         ligand.binding_partner = self.id
         break
-      distance = np.linalg.norm(self.location - ligand.location)
+      distance = min(distances)
       if distance < distance_min:
         distance_min = distance
         D_ligand = ligand.D
@@ -111,6 +110,6 @@ class Substrate(Molecule):
         break
     D = D_ligand + self.D
     distance = distance_min *1e-10 # meters
-    dt = 1/(12*D)*(distance/5)**2
+    dt = 1/(12*D)*(distance/10)**2
     return dt
         
