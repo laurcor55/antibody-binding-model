@@ -55,18 +55,22 @@ class Reaction:
     self.find_new_location()
     for molecule in self.molecules:
       molecule.move()
-      molecule.rotate(self.dt)
+      molecule.rotate()
     
   def find_new_location(self):
-    self.overlap = True
-    while self.overlap == True:
+    self.overlap_check = False
+    self.lock_check = False
+    while self.overlap_check == False & self.lock_check == False:
       for molecule in self.molecules:
         molecule.attempt_move(self.dt)
+        molecule.attempt_rotation(self.dt)
+
       self.check_overlaps()
+      self.check_locks()
     
 
   def check_overlaps(self):
-    self.overlap = False
+    self.overlap_check = True
     n = len(self.molecules)
     for ii in range(n-1):
       for jj in range(ii+1, n):
@@ -74,10 +78,20 @@ class Reaction:
           double_radius = self.molecules[ii].radius + self.molecules[jj].radius
           distance = np.linalg.norm(self.molecules[ii].new_location - self.molecules[jj].new_location)
           if distance < double_radius:
-            self.overlap = True
+            self.overlap_check = False
             break
-    
-            
+
+  def check_locks(self):
+    self.lock_check = True
+    ligands = [molecule for molecule in self.molecules if type(molecule) == mol.Ligand]
+    for ligand in ligands:
+      if ligand.locked_partner > 0:
+        substrate = self.molecules[ligand.locked_partner-1]
+
+        new_distances = [mol.calculate_distance(substrate_dock_location, ligand_dock_location) for substrate_dock_location, ligand_dock_location in zip(substrate.new_dock_locations, ligand.new_dock_locations)]
+        close_docks = [True for new_distance in new_distances if new_distance < 2]
+        if len(close_docks) < 2:
+          self.lock_check = False
 
 def scientific(input):
   output = "{:e}".format(input)
@@ -88,15 +102,15 @@ total_count = 50000
 rstart = 42 #angstroms
 rend = 200 #angstroms
 binding_count = 0
-#for kk in range(total_count):
-kk = 0
-while binding_count < 1:
+for kk in range(total_count):
+#kk = 0
+#while binding_count < 1:
   molecules = [mol.Ligand(np.array([50, 50, 50], float), radius), mol.Substrate(np.array([50, 50, 50+rstart], float), radius)]
   reaction = Reaction(molecules, rend)
   binding_count += reaction.binding
   if kk % 10 ==0:
     print(str(kk) + ' of ' + str(total_count) + ', ' + str(binding_count) + ' bound')
-  kk += 1
+ # kk += 1
 
 
 reaction.show_animation()
