@@ -42,28 +42,21 @@ class Molecule:
     nums = np.random.normal(scale=1, size=3)
     offset = np.multiply(S, nums)
     self.new_location = np.add(self.location, offset)
-    self.dock_locations
 
-  def attempt_rotation(self, dt):
+  def move(self):
+    self.location = self.new_location
+    self.location_over_time.append(self.location.copy())    
+
+  def rotate(self, dt):
     S = math.sqrt(2*self.D_r*dt)
     delta_eta = S * np.random.normal()
     delta_phi = S * np.random.normal()
     delta_theta = S * np.random.normal()
 
     R = get_R(delta_theta, delta_phi, delta_eta)
-    self.new_R = np.dot(self.R, R)
-    self.new_dock_offsets = [np.dot(self.new_R, dock_offset) for dock_offset in self.dock_offsets]
-    self.new_dock_locations = [dock_offset + self.new_location for dock_offset in self.dock_offsets]
-  
-
-  def move(self):
-    self.location = self.new_location
-    self.location_over_time.append(self.location.copy())    
-
-  def rotate(self):
-    self.R = self.new_R
-    self.dock_offsets = self.new_dock_offsets
-    self.dock_locations = self.new_dock_locations
+    self.R = np.dot(self.R, R)
+    self.dock_offsets = [np.dot(self.R, dock_offset) for dock_offset in self.dock_offsets]
+    self.dock_locations = [dock_offset + self.location for dock_offset in self.dock_offsets]
     self.dock_locations_over_time.append(self.dock_locations.copy())
   
   def set_id(self, id):
@@ -93,6 +86,7 @@ class Ligand(Molecule):
   def __init__(self, location, radius):
     self.dock_offsets = [np.array([-8.5, 8.5, radius]), np.array([8.5, 8.5, radius]), np.array([-8.5, -8.5, radius]), np.array([8.5, -8.5, radius])]
     super().__init__(location, radius)
+ 
 
 class Substrate(Molecule):
   def __init__(self, location, radius):
@@ -105,7 +99,7 @@ class Substrate(Molecule):
     for ligand in ligands:
       distances = [calculate_distance(substrate_dock_location, ligand_dock_location) for substrate_dock_location, ligand_dock_location in zip(self.dock_locations, ligand.dock_locations)]
       close_docks = sum(distance < 2 for distance in distances)
-      if close_docks >= 3:
+      if close_docks >= 2:
         self.binding_partner = ligand.id
         ligand.binding_partner = self.id
         break
