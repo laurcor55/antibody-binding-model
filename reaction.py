@@ -27,9 +27,17 @@ class Reaction:
       self.step_reaction()
       self.check_reaction_status()
 
-  def check_reaction_status(self):
+  def get_substrates(self):
     substrates = [molecule for molecule in self.molecules if (type(molecule) == mol.Substrate) or (type(molecule) == mol.FixedSubstrate)]
+    return substrates
+
+  def get_ligands(self):
     ligands = [molecule for molecule in self.molecules if type(molecule) == mol.Ligand]
+    return ligands 
+
+  def check_reaction_status(self):
+    substrates = self.get_substrates()
+    ligands = self.get_ligands()
     minimum_substrate_ligand_distance = self.rend*2
     for substrate in substrates:
       for ligand in ligands:
@@ -105,24 +113,34 @@ class Reaction:
         if ii != jj:
           double_radius = self.molecules[ii].radius + self.molecules[jj].radius
           distance = np.linalg.norm(self.molecules[ii].new_location - self.molecules[jj].new_location)
-          if distance <= double_radius:
+          if distance < double_radius:
             return False
     return True
 
 
   def move_locked_molecules(self):
+    locked_pairs = self.get_locked_pairs()
+    for locked_pair in locked_pairs:
+      substrate = locked_pair[0]
+      ligand = locked_pair[1]
+      probability = np.exp(-4.2/(273+25)*ligand.radius*1e-10)
+      number = np.random.uniform()
+      if number < probability:
+        self.find_locked_location(substrate, ligand)
+      else: 
+        ligand.locked_partner = 0
+        substrate.locked_partner = 0
+
+  def get_locked_pairs(self):
+    locked_pairs = []
     ligands = [molecule for molecule in self.molecules if type(molecule) == mol.Ligand]
     for ligand in ligands:
       if ligand.locked_partner > 0:
-        probability = np.exp(-4.2/(273+25)*ligand.radius*1e-10)
         substrate = self.molecules[ligand.locked_partner-1]
-        number = np.random.uniform()
-        if number < probability:
-          self.find_locked_location(substrate, ligand)
-          
-        else: 
-          ligand.locked_partner = 0
-          substrate.locked_partner = 0
+        locked_pairs.append([substrate, ligand])
+    return locked_pairs
+
+
   
   def find_locked_location(self, substrate, ligand):
     dock_locations = substrate.dock_locations
@@ -154,9 +172,6 @@ class Reaction:
 
 def calculate_distance(location_1, location_2):
   return np.linalg.norm(location_1 - location_2) 
-
-
-
 
 def scientific(input):
   output = "{:e}".format(input)

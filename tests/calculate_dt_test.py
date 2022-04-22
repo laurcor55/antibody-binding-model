@@ -32,7 +32,6 @@ class ReactionTestCase(unittest.TestCase):
     close_molecule_1 = 0
     close_molecule_2 = 1
     dt = manual_calculate_dt(self.molecules_1, close_dock, close_molecule_1, close_molecule_2)
-    self.reaction_1.show_animation()
     self.reaction_1.calculate_dt()
     self.assertAlmostEqual(self.reaction_1.dt,  dt, 'incorrect calculate_dt')
 
