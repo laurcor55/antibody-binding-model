@@ -2,8 +2,8 @@ import reaction as reac
 import molecules as mol
 import numpy as np
 
-
 radius = 18 # angstroms
+minimum_binding_docks = 3
 total_count = 50000
 rstart = 42 #angstroms
 rend = 200 #angstroms
@@ -11,14 +11,15 @@ binding_count = 0
 for kk in range(total_count):
 #kk = 0
 #while binding_count < 1:
-  molecules = [mol.Ligand(np.array([50, 50, 50], float), radius), mol.Substrate(np.array([50, 50, 50+rstart], float), radius)]
-  reaction = reac.Reaction(molecules, rend)
+  molecules = [mol.Ligand(np.array([50, 50, 50], float), radius, [0, 0, 0]), mol.Substrate(np.array([50, 50, 50+rstart], float), radius, [0, 0, 0])]
+  reaction = reac.Reaction(molecules, rend, minimum_binding_docks)
+  reaction.progress_reaction()
   binding_count += reaction.binding
   if kk % 10 ==0:
     print(str(kk) + ' of ' + str(total_count) + ', ' + str(binding_count) + ' bound')
-  #kk += 1
+#  kk += 1
 
-#reaction.show_animation()
+reaction.show_animation()
 print(binding_count)
 p = binding_count/total_count
 

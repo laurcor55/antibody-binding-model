@@ -6,45 +6,71 @@ import matplotlib.animation as animation
 import molecules as mol
 import os
 class Reaction:
-  def __init__(self, molecules, rend):
+  def __init__(self, molecules, rend, minimum_binding_docks):
     self.molecules = molecules
-    self.end_reaction = False
     self.rend = rend
-    self.dt = 1e-10
+    self.minimum_binding_docks = minimum_binding_docks
+    self.end_reaction = False
     self.binding = False
+    self.assign_molecule_id()
+    self.check_reaction_status()
+
+  def assign_molecule_id(self):
     id = 1
     for molecule in self.molecules:
       molecule.set_id(id)
       id += 1
-    self.t_step = 1
-    self.time = 0
-    self.progress_reaction()
 
   def progress_reaction(self):
     while self.end_reaction == False:
-      self.check_reaction_status()
+      self.calculate_dt()
       self.step_reaction()
-      self.t_step += 1
-      self.time += self.dt
+      self.check_reaction_status()
 
   def check_reaction_status(self):
-    substrates = [molecule for molecule in self.molecules if type(molecule) == mol.Substrate]
+    substrates = [molecule for molecule in self.molecules if (type(molecule) == mol.Substrate) or (type(molecule) == mol.FixedSubstrate)]
     ligands = [molecule for molecule in self.molecules if type(molecule) == mol.Ligand]
+    minimum_substrate_ligand_distance = self.rend*2
     for substrate in substrates:
-      self.dt = substrate.calculate_ligand_distances(ligands, self.rend)
-      if substrate.binding_partner > 0:
-        self.end_reaction = True
-        self.binding = True
-        break
-      elif substrate.binding_partner < 0:
-        self.end_reaction = True
-        self.binding = False
-        break
+      for ligand in ligands:
+        distances = [mol.calculate_distance(substrate_dock_location, ligand_dock_location) for substrate_dock_location, ligand_dock_location in zip(substrate.dock_locations, ligand.dock_locations)]
+        distance_min = min(distances)
+        if distance_min < minimum_substrate_ligand_distance:
+          minimum_substrate_ligand_distance = distance_min
+        close_docks_num = sum(distance < 2 for distance in distances)
+        if close_docks_num >= self.minimum_binding_docks:
+          substrate.binding_partner = ligand.id
+          ligand.binding_partner = substrate.id
+          self.end_reaction = True
+          self.binding = True
+        if close_docks_num >= 2:
+          substrate.locked_partner = ligand.id
+          ligand.locked_partner = substrate.id
+    if minimum_substrate_ligand_distance > self.rend:
+      self.end_reaction = True
+      self.binding = False
+
+  def calculate_dt(self):
+    substrates = [molecule for molecule in self.molecules if (type(molecule) == mol.Substrate) or (type(molecule) == mol.FixedSubstrate)]
+    ligands = [molecule for molecule in self.molecules if type(molecule) == mol.Ligand]
+    distance_min_overall = 10000000
+    for substrate in substrates:
+      for ligand in ligands:
+        distances = [calculate_distance(substrate_dock_location, ligand_dock_location) for substrate_dock_location, ligand_dock_location in zip(substrate.dock_locations, ligand.dock_locations)]
+        distance_min = min(distances)
+        if distance_min < distance_min_overall:
+          distance_min_overall = distance_min
+          D_ligand = ligand.D
+          D_substrate = substrate.D
+    D = D_ligand + D_substrate
+    distance = distance_min_overall *1e-10 # meters
+    self.dt = 1/(12*D)*(distance/10)**2
  
   def show_animation(self):
     self.fig = plt.figure()
     self.ax = p3.Axes3D(self.fig)
-    for t_step in range(self.t_step):
+    t_steps = len(self.molecules[0].location_over_time)
+    for t_step in range(t_steps):
       self.ax.clear()
       for molecule in self.molecules:
         molecule.plot(self.ax, t_step)
@@ -66,7 +92,6 @@ class Reaction:
     for molecule in self.molecules:
       if molecule.locked_partner < 1:
         molecule.move()
-  
     
   def rotate_unlocked_molecules(self):
     for molecule in self.molecules:
@@ -80,21 +105,10 @@ class Reaction:
         if ii != jj:
           double_radius = self.molecules[ii].radius + self.molecules[jj].radius
           distance = np.linalg.norm(self.molecules[ii].new_location - self.molecules[jj].new_location)
-          if distance < double_radius:
+          if distance <= double_radius:
             return False
     return True
 
-  def check_locks(self):
-    ligands = [molecule for molecule in self.molecules if type(molecule) == mol.Ligand]
-    for ligand in ligands:
-      if ligand.locked_partner > 0:
-        substrate = self.molecules[ligand.locked_partner-1]
-        new_distances = [mol.calculate_distance(substrate_dock_location, ligand_dock_location) for substrate_dock_location, ligand_dock_location in zip(substrate.new_dock_locations, ligand.new_dock_locations)]
-        close_docks = [new_distance < 3 for new_distance in new_distances]
-        print(sum(close_docks))
-        if sum(close_docks) < 2:
-          return False
-    return True
 
   def move_locked_molecules(self):
     ligands = [molecule for molecule in self.molecules if type(molecule) == mol.Ligand]
@@ -104,41 +118,47 @@ class Reaction:
         substrate = self.molecules[ligand.locked_partner-1]
         number = np.random.uniform()
         if number < probability:
-          ligand.location = find_locked_location(substrate, ligand)
-          ligand.dock_locations = substrate.dock_locations
-          ligand.R = ligand.location - ligand.dock_locations 
+          self.find_locked_location(substrate, ligand)
           
-          ligand.dock_locations_over_time.append(ligand.dock_locations.copy())
-          ligand.location_over_time.append(ligand.location.copy())
-          substrate.dock_locations_over_time.append(substrate.dock_locations.copy())
-          substrate.location_over_time.append(substrate.location.copy())
         else: 
           ligand.locked_partner = 0
           substrate.locked_partner = 0
-
-
-
-def find_locked_location(substrate, ligand):
-  dock_locations = substrate.dock_locations
-  p1 = dock_locations[0]
-  p2 = dock_locations[1]
-  p3 = dock_locations[2]
-  p4 = dock_locations[3]
-
-  x0 = (p1[0] + p2[0] +p3[0] + p4[0])/4
-  y0 = (p1[1] + p2[1] +p3[1] + p4[1])/4
-  z0 = (p1[2] + p2[2] +p3[2] + p4[2])/4
-
-  x1 = substrate.location[0]
-  y1 = substrate.location[1]
-  z1 = substrate.location[2]
   
-  v = np.array([x1, y1, z1]) - np.array([x0, y0, z0])
-  u = v/np.linalg.norm(v)
-  d = ligand.radius
-  new_location = np.array([x0, y0, z0]) - d * u
-  return new_location
+  def find_locked_location(self, substrate, ligand):
+    dock_locations = substrate.dock_locations
+    p1 = dock_locations[0]
+    p2 = dock_locations[1]
+    p3 = dock_locations[2]
+    p4 = dock_locations[3]
+
+    x0 = (p1[0] + p2[0] +p3[0] + p4[0])/4
+    y0 = (p1[1] + p2[1] +p3[1] + p4[1])/4
+    z0 = (p1[2] + p2[2] +p3[2] + p4[2])/4
+
+    x1 = substrate.location[0]
+    y1 = substrate.location[1]
+    z1 = substrate.location[2]
+    
+    v = np.array([x1, y1, z1]) - np.array([x0, y0, z0])
+    u = v/np.linalg.norm(v)
+    d = ligand.radius
+    ligand.new_location = np.array([x0, y0, z0]) - d * u
+    ligand.location = ligand.new_location
+    ligand.dock_locations = substrate.dock_locations
+    ligand.R = ligand.location - ligand.dock_locations 
+    ligand.dock_locations_over_time.append(ligand.dock_locations.copy())
+    ligand.location_over_time.append(ligand.location.copy())
+    
+    substrate.dock_locations_over_time.append(substrate.dock_locations.copy())
+    substrate.location_over_time.append(substrate.location.copy())
+
+def calculate_distance(location_1, location_2):
+  return np.linalg.norm(location_1 - location_2) 
+
+
+
 
 def scientific(input):
   output = "{:e}".format(input)
   return output
+
