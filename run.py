@@ -11,7 +11,7 @@ binding_count = 0
 for kk in range(total_count):
 #kk = 0
 #while binding_count < 1:
-  molecules = [mol.Ligand(np.array([50, 50, 50], float), radius, [0, 0, 0]), mol.Substrate(np.array([50, 50, 50+rstart], float), radius, [0, 0, 0])]
+  molecules = [mol.Ligand([50, 50, 50], radius, [0, 0, 0]), mol.Substrate([50, 50, 50+rstart], radius, [0, 0, 0])]
   reaction = reac.Reaction(molecules, rend, minimum_binding_docks)
   reaction.progress_reaction()
   binding_count += reaction.binding

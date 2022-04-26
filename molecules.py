@@ -25,7 +25,7 @@ class Molecule:
     boltzmann = 1.380649e-23
     viscocity = 8.9e-4
     self.D = boltzmann * temperature /(6*np.pi*viscocity*self.radius*1e-10) #m2/s
-    self.D_r = boltzmann*temperature/(8*np.pi*viscocity*(self.radius*1e-10)**3)
+    self.D_r = boltzmann * temperature/(8*np.pi*viscocity*(self.radius*1e-10)**3)
 
     self.binding_partner = 0
     self.locked_partner = 0

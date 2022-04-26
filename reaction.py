@@ -61,7 +61,7 @@ class Reaction:
   def calculate_dt(self):
     substrates = [molecule for molecule in self.molecules if (type(molecule) == mol.Substrate) or (type(molecule) == mol.FixedSubstrate)]
     ligands = [molecule for molecule in self.molecules if type(molecule) == mol.Ligand]
-    distance_min_overall = 10000000
+    distance_min_overall = self.rend*2
     for substrate in substrates:
       for ligand in ligands:
         distances = [calculate_distance(substrate_dock_location, ligand_dock_location) for substrate_dock_location, ligand_dock_location in zip(substrate.dock_locations, ligand.dock_locations)]
@@ -117,15 +117,14 @@ class Reaction:
             return False
     return True
 
-
   def move_locked_molecules(self):
     locked_pairs = self.get_locked_pairs()
     for locked_pair in locked_pairs:
       substrate = locked_pair[0]
       ligand = locked_pair[1]
-      probability = np.exp(-4.2/(273+25)*ligand.radius*1e-10)
+      probability = np.exp(-4.2/(297*1.987e-3))
       number = np.random.uniform()
-      if number < probability:
+      if number > probability:
         self.find_locked_location(substrate, ligand)
       else: 
         ligand.locked_partner = 0
@@ -139,8 +138,6 @@ class Reaction:
         substrate = self.molecules[ligand.locked_partner-1]
         locked_pairs.append([substrate, ligand])
     return locked_pairs
-
-
   
   def find_locked_location(self, substrate, ligand):
     dock_locations = substrate.dock_locations
