@@ -42,9 +42,31 @@ class Molecule:
     x += 'dock locations: ' + str(self.dock_locations) + '\n'
     return x
 
+  def attempt_move(self, dt):
+    D = self.D * (10**10)**2# angstrom2/s
+    S = math.sqrt(2*D*dt)
+    nums = np.random.normal(scale=1, size=3)
+    offset = np.multiply(S, nums)
+    self.new_location = np.add(self.location, offset)
+
+    S = math.sqrt(2*self.D_r*dt)
+    delta_eta = S * np.random.normal()
+    delta_phi = S * np.random.normal()
+    delta_theta = S * np.random.normal()
+
+    R = get_R(delta_theta, delta_phi, delta_eta)
+    self.new_R = np.dot(self.R, R)
+    self.new_dock_offsets = [np.dot(self.new_R, dock_offset) for dock_offset in self.dock_offsets]
+    self.new_dock_locations = [dock_offset + self.new_location for dock_offset in self.dock_offsets]
+
   def move(self):
     self.location = self.new_location
+    self.R = self.new_R
+    self.dock_offsets = self.new_dock_offsets
+    self.dock_locations = self.new_dock_locations
     self.location_over_time.append(self.location.copy())    
+    self.dock_locations_over_time.append(self.dock_locations.copy())
+
   
   def set_id(self, id):
     self.id = id
@@ -74,12 +96,7 @@ class Ligand(Molecule):
     self.dock_offsets = [np.array([-8.5, 8.5, radius]), np.array([8.5, 8.5, radius]), np.array([-8.5, -8.5, radius]), np.array([8.5, -8.5, radius])]
     super().__init__(location, radius, rotation)
 
-  def attempt_move(self, dt):
-    D = self.D * (10**10)**2# angstrom2/s
-    S = math.sqrt(2*D*dt)
-    nums = np.random.normal(scale=1, size=3)
-    offset = np.multiply(S, nums)
-    self.new_location = np.add(self.location, offset)
+
   
   def rotate(self, dt):
     S = math.sqrt(2*self.D_r*dt)
@@ -92,6 +109,9 @@ class Ligand(Molecule):
     self.dock_offsets = [np.dot(self.R, dock_offset) for dock_offset in self.dock_offsets]
     self.dock_locations = [dock_offset + self.location for dock_offset in self.dock_offsets]
     self.dock_locations_over_time.append(self.dock_locations.copy())
+
+    
+  
  
 
 class Substrate(Molecule):
@@ -99,12 +119,6 @@ class Substrate(Molecule):
     self.dock_offsets =[np.array([8.5, 8.5, radius]), np.array([-8.5, 8.5, radius]), np.array([8.5, -8.5, radius]), np.array([-8.5, -8.5, radius])]
     super().__init__(location, radius, rotation)
 
-  def attempt_move(self, dt):
-    D = self.D * (10**10)**2# angstrom2/s
-    S = math.sqrt(2*D*dt)
-    nums = np.random.normal(scale=1, size=3)
-    offset = np.multiply(S, nums)
-    self.new_location = np.add(self.location, offset)
   
   def rotate(self, dt):
     S = math.sqrt(2*self.D_r*dt)

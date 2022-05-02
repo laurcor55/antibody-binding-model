@@ -3,4 +3,5 @@
 *.tif
 *.pdb
 *.fasta
+*.svg
 venv/

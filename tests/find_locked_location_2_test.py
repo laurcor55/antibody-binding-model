@@ -17,7 +17,19 @@ class ReactionTestCase(unittest.TestCase):
     minimum_binding_docks = 3
 
     self.reaction = reac.Reaction(self.molecules, rend, minimum_binding_docks)
-    self.reaction.move_locked_molecules()
+    self.reaction.find_locked_location_2(self.reaction.molecules[0], self.reaction.molecules[1])
+    print(self.reaction.molecules[0].new_location)
+    print(self.reaction.molecules[0].location)
+
+    print(self.reaction.molecules[0].new_dock_locations)
+    print(self.reaction.molecules[0].dock_locations)
+
+    print(self.reaction.molecules[1].new_location)
+    print(self.reaction.molecules[1].location)
+
+    print(self.reaction.molecules[1].new_dock_locations)
+    print(self.reaction.molecules[1].dock_locations)
+
     
 def suite():
   suite = unittest.TestSuite()
