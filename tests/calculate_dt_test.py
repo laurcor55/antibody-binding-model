@@ -32,7 +32,9 @@ class ReactionTestCase(unittest.TestCase):
     close_molecule_1 = 0
     close_molecule_2 = 1
     dt = manual_calculate_dt(self.molecules_1, close_dock, close_molecule_1, close_molecule_2)
+    print(dt)
     self.reaction_1.calculate_dt()
+    print(self.reaction_1.dt)
     self.assertAlmostEqual(self.reaction_1.dt,  dt, 'incorrect calculate_dt')
 
     close_dock = 0
@@ -62,7 +64,7 @@ def manual_calculate_dt(molecules, close_dock, close_molecule_1, close_molecule_
   D_0 = boltzmann * temperature /(6*np.pi*viscocity*molecules[0].radius*1e-10) #m2/s
   D_1 = boltzmann * temperature /(6*np.pi*viscocity*molecules[1].radius*1e-10) #m2/s
   D = D_0 + D_1
-  return 1/(12*D)*(distance/10)**2
+  return 1/(12*D)*(distance/5)**2
 
 if __name__ == '__main__':
     runner = unittest.TextTestRunner()

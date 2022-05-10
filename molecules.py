@@ -54,10 +54,10 @@ class Molecule:
     delta_phi = S * np.random.normal()
     delta_theta = S * np.random.normal()
 
-    R = get_R(delta_theta, delta_phi, delta_eta)
-    self.new_R = np.dot(self.R, R)
+    self.new_R = get_R(delta_theta, delta_phi, delta_eta)
+    #self.new_R = np.dot(self.R, R)
     self.new_dock_offsets = [np.dot(self.new_R, dock_offset) for dock_offset in self.dock_offsets]
-    self.new_dock_locations = [dock_offset + self.new_location for dock_offset in self.dock_offsets]
+    self.new_dock_locations = [np.add(dock_offset, self.new_location) for dock_offset in self.new_dock_offsets]
 
   def move(self):
     self.location = self.new_location
@@ -119,31 +119,12 @@ class Substrate(Molecule):
     self.dock_offsets =[np.array([8.5, 8.5, radius]), np.array([-8.5, 8.5, radius]), np.array([8.5, -8.5, radius]), np.array([-8.5, -8.5, radius])]
     super().__init__(location, radius, rotation)
 
-  
-  def rotate(self, dt):
-    S = math.sqrt(2*self.D_r*dt)
-    delta_eta = S * np.random.normal()
-    delta_phi = S * np.random.normal()
-    delta_theta = S * np.random.normal()
-
-    R = get_R(delta_theta, delta_phi, delta_eta)
-    self.R = np.dot(self.R, R)
-    self.dock_offsets = [np.dot(self.R, dock_offset) for dock_offset in self.dock_offsets]
-    self.dock_locations = [dock_offset + self.location for dock_offset in self.dock_offsets]
-    self.dock_locations_over_time.append(self.dock_locations.copy())
-
 
 
 class FixedSubstrate(Molecule):
   def __init__(self, location, radius, rotation):
     self.dock_offsets =[np.array([8.5, 8.5, radius]), np.array([-8.5, 8.5, radius]), np.array([8.5, -8.5, radius]), np.array([-8.5, -8.5, radius])]
     super().__init__(location, radius, rotation)
- 
-  def attempt_move(self, dt):
-    self.new_location = self.location
-  
-  def rotate(self, dt):
-    self.dock_locations_over_time.append(self.dock_locations.copy())
 
 
 def calculate_distance(location_1, location_2):

@@ -12,8 +12,8 @@ class ReactionTestCase(unittest.TestCase):
   def setUp(self):
     self.molecules_1 = [mol.Ligand([50, 50, 50], 9, [0, 0, 0]), mol.Substrate([50, 50, 66], 7, [np.pi, 0, np.pi])]
     self.molecules_2 = [mol.Ligand([50, 50, 50], 9, [0, 0, 0]), mol.FixedSubstrate([50, 50, 66], 7, [np.pi, 0, np.pi])]
-    self.molecules_3 = [mol.Substrate([50, 50, 50], 9, [0, 0, 0]), mol.Substrate([50, 50, 66], 7, [np.pi, 0, np.pi])]
-    self.molecules_4 = [mol.Ligand([50, 50, 50], 9, [0, 0, 0]), mol.Ligand([50, 50, 66], 7, [np.pi, 0, np.pi])]
+  
+  
     self.molecules_5 = [mol.Substrate([50, 50, 50], 9, [0, 0, 0]), mol.Ligand([50, 66, 66], 7, [0, np.pi, 0])]
     self.molecules_6 = [mol.Substrate([50, 50, 50], 9, [0, 0, 0]), mol.Ligand([50, 66, 66], 7, [0, np.pi, -np.pi/2])]
     self.molecules_7 = [mol.FixedSubstrate([50, 50, 50], 9, [0, 0, 0]), mol.Ligand([50, 66, 66], 7, [0, np.pi, -np.pi/2])]
@@ -21,8 +21,7 @@ class ReactionTestCase(unittest.TestCase):
     self.molecules_9 = [mol.FixedSubstrate([50, 50, 50], 9, [0, 0, 0]), mol.Ligand([50, 170, 1066], 7, [0, np.pi, -np.pi/2])]
     self.molecules_10 = [mol.FixedSubstrate([50, 50, 50], 9, [0, 0, 0]), mol.Ligand([50, 55, 55], 7, [0, np.pi, -np.pi/2])]
     self.molecules_11 = [mol.Substrate([50, 50, 50], 9, [0, 0, 0]), mol.Ligand([50, 55, 55], 7, [0, np.pi, -np.pi/2])]
-    self.molecules_12 = [mol.Ligand([50, 50, 50], 9, [0, 0, 0]), mol.Ligand([50, 55, 55], 7, [0, np.pi, -np.pi/2])]
-    self.molecules_13 = [mol.Substrate([50, 50, 50], 9, [0, 0, 0]), mol.Substrate([50, 55, 55], 7, [0, np.pi, -np.pi/2])]
+
 
 
 
@@ -41,10 +40,8 @@ class ReactionTestCase(unittest.TestCase):
     self.assertEqual(overlaps, True, 'overlaps wrong')
     overlaps = self.run_check_overlaps(self.molecules_2)
     self.assertEqual(overlaps, True, 'overlaps wrong')
-    overlaps = self.run_check_overlaps(self.molecules_3)
-    self.assertEqual(overlaps, True, 'overlaps wrong')
-    overlaps = self.run_check_overlaps(self.molecules_4)
-    self.assertEqual(overlaps, True, 'overlaps wrong')
+
+   
     overlaps = self.run_check_overlaps(self.molecules_5)
     self.assertEqual(overlaps, True, 'overlaps wrong')
     overlaps = self.run_check_overlaps(self.molecules_6)
@@ -59,10 +56,7 @@ class ReactionTestCase(unittest.TestCase):
     self.assertEqual(overlaps, False, 'overlaps wrong')
     overlaps = self.run_check_overlaps(self.molecules_11)
     self.assertEqual(overlaps, False, 'overlaps wrong')
-    overlaps = self.run_check_overlaps(self.molecules_12)
-    self.assertEqual(overlaps, False, 'overlaps wrong')
-    overlaps = self.run_check_overlaps(self.molecules_13)
-    self.assertEqual(overlaps, False, 'overlaps wrong')
+  
     
 def suite():
   suite = unittest.TestSuite()
