@@ -12,33 +12,35 @@ binding_count = 0
 seed = int(time.time())
 np.random.seed(seed)
 times = []
-time.perf_counter()
-for kk in range(total_count):
-#kk = 0
-#while binding_count < 1:
-  #molecules = [mol.Ligand([50, 50, 50], radius, [0, 0, 0]), mol.Substrate([50, 50, 50+rstart], radius, [np.random.uniform()*np.pi*2, np.random.uniform()*np.pi*2, np.random.uniform()*np.pi*2])]
-  molecules = [mol.Ligand([50, 50, 50], radius, [0, 0, 0]), mol.Substrate([50, 50, 50+2*radius+1], radius, [0, np.pi, 0])]
+#for kk in range(total_count):
+kk = 0
+while binding_count < 1:
+  molecules = [mol.Ligand([50, 50, 50], radius, [0, 0, 0]), mol.Substrate([50, 50, 50+rstart], radius, [np.random.uniform()*np.pi*2, np.random.uniform()*np.pi*2, np.random.uniform()*np.pi*2])]
+  #molecules = [mol.Ligand([50, 50, 50], radius, [0, 0, 0]), mol.FixedSubstrate([50, 50, 50+2*radius], radius, [0, np.pi, 0])]
  
   reaction = reac.Reaction(molecules, rend, minimum_binding_docks)
   reaction.progress_reaction()
-  #binding_count += reaction.binding
-  times.append(reaction.time)
-  mean_kd = 1/np.mean(np.array(times))
-  print(mean_kd)
-  if kk % 10 ==0:
-    print(str(kk) + ' of ' + str(total_count) + ', ' + str(binding_count) + ' bound', end="\r")
- # kk += 1
-  del molecules
-  del reaction
+  
+  if False:
+    times.append(reaction.time)
+    mean_time = np.mean(np.array(times))
+    mean_kd = 1/mean_time
+    print(str(kk) + ' of ' + str(total_count) + ', ' + reac.scientific(mean_kd) + ' kd', end="\r")
+  if True:
+    if reaction.reaction_status == 'binding':
+      binding_count += 1
+    if kk % 10 ==0:
+      print(str(kk) + ' of ' + str(total_count) + ', ' + str(binding_count) + ' bound', end="\r")
+    kk += 1
+ # del molecules
+  #del reaction
+reaction.show_animation()
+print('done', end='\n')
+if True:
+  print(binding_count)
+  p = binding_count/total_count
 
-time.perf_counter()
-
-#reaction.show_animation()
-print(binding_count)
-p = binding_count/total_count
-
-print(p)
-if False:
+  print(p)
   D = molecules[0].D + molecules[1].D
   b = rstart*1e-10 # meters
   c = rend * 1e-10 #meters

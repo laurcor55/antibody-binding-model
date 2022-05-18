@@ -57,14 +57,14 @@ def suite():
     return suite
     
 def manual_calculate_dt(molecules, close_dock, close_molecule_1, close_molecule_2):
-  distance = np.linalg.norm(molecules[close_molecule_1].dock_locations[close_dock] - molecules[close_molecule_2].dock_locations[close_dock])*1e-10
+  distance = (np.linalg.norm(molecules[close_molecule_1].dock_locations[close_dock] - molecules[close_molecule_2].dock_locations[close_dock])+1)*1e-10 
   temperature = 298
   boltzmann = 1.380649e-23
   viscocity = 8.9e-4
   D_0 = boltzmann * temperature /(6*np.pi*viscocity*molecules[0].radius*1e-10) #m2/s
   D_1 = boltzmann * temperature /(6*np.pi*viscocity*molecules[1].radius*1e-10) #m2/s
   D = D_0 + D_1
-  return 1/(12*D)*(distance/5)**2
+  return 1/(12*D)*(distance/1)**2
 
 if __name__ == '__main__':
     runner = unittest.TextTestRunner()

@@ -1,20 +1,11 @@
 import math
 import numpy as np
+import scipy
+from scipy.spatial.transform import Rotation as R
+from numba import jit
+import time
 
-def get_R(theta, phi, eta):
-  R_theta = np.array([[np.cos(theta), -np.sin(theta), 0], \
-    [np.sin(theta), np.cos(theta), 0], \
-    [0, 0, 1]])
 
-  R_phi = np.array([[np.cos(phi), 0, np.sin(phi)], \
-    [0, 1, 0], \
-    [-np.sin(phi), 0, np.cos(phi)]])
-
-  R_eta = np.array([[1, 0, 0], \
-    [0, np.cos(eta), -np.sin(eta)], \
-    [0, np.sin(eta), np.cos(eta)]])    
-  
-  return np.dot(np.dot(R_eta, R_phi), R_theta)
 
 class Molecule:
   def __init__(self, location, radius, rotation):
@@ -31,10 +22,10 @@ class Molecule:
     self.locked_partner = 0
     self.R = get_R(rotation[0], rotation[1], rotation[2])
     self.new_location = self.location
-    self.location_over_time = [self.location.copy()]
-    self.dock_offsets = [np.dot(dock_offset, self.R) for dock_offset in self.dock_offsets]
-    self.dock_locations = [dock_offset + self.location for dock_offset in self.dock_offsets]
-    self.dock_locations_over_time = [self.dock_locations.copy()]
+    self.location_over_time = [self.location]
+    self.dock_offsets = multiply_R(self.R, self.dock_offsets)
+    self.dock_locations = get_dock_locations(self.dock_offsets, self.location)
+    self.dock_locations_over_time = [self.dock_locations]
   
   def __repr__(self):
     x = '__________\n' 
@@ -43,21 +34,11 @@ class Molecule:
     return x
 
   def attempt_move(self, dt):
-    D = self.D * (10**10)**2# angstrom2/s
-    S = math.sqrt(2*D*dt)
-    nums = np.random.normal(scale=1, size=3)
-    offset = np.multiply(S, nums)
-    self.new_location = np.add(self.location, offset)
-
-    S = math.sqrt(2*self.D_r*dt)
-    delta_eta = S * np.random.normal()
-    delta_phi = S * np.random.normal()
-    delta_theta = S * np.random.normal()
-
-    self.new_R = get_R(delta_theta, delta_phi, delta_eta)
-    #self.new_R = np.dot(self.R, R)
-    self.new_dock_offsets = [np.dot(self.new_R, dock_offset) for dock_offset in self.dock_offsets]
-    self.new_dock_locations = [np.add(dock_offset, self.new_location) for dock_offset in self.new_dock_offsets]
+    self.new_location = find_new_location(self.D, dt, self.location)
+    delta = get_new_angles(self.D_r, dt)
+    self.new_R = get_R(delta[0], delta[1], delta[2])
+    self.new_dock_offsets = multiply_R(self.new_R, self.dock_offsets)
+    self.new_dock_locations = get_dock_locations(self.new_dock_offsets, self.new_location)
 
   def move(self):
     self.location = self.new_location
@@ -66,6 +47,12 @@ class Molecule:
     self.dock_locations = self.new_dock_locations
     self.location_over_time.append(self.location.copy())    
     self.dock_locations_over_time.append(self.dock_locations.copy())
+  
+  def move_back(self):
+    self.new_location = self.location
+    self.new_R = self.R
+    self.new_dock_offsets = self.dock_offsets
+    self.new_dock_locations = self.dock_locations
 
   
   def set_id(self, id):
@@ -76,7 +63,7 @@ class Molecule:
     ax.set_xlim3d(-limits, limits)
     ax.set_ylim3d(-limits, limits)
     ax.set_zlim3d(-limits, limits)
-    colors = ['b', 'g', 'r', 'y']
+    colors = ['b', 'g', 'r', 'b', 'g', 'r']
     ii = 0
     for dock_locations_over_time in self.dock_locations_over_time[t_step]:
       x = np.array([self.location_over_time[t_step][0], dock_locations_over_time[0]])
@@ -93,39 +80,75 @@ class Molecule:
 
 class Ligand(Molecule):
   def __init__(self, location, radius, rotation):
-    self.dock_offsets = [np.array([-8.5, 8.5, radius]), np.array([8.5, 8.5, radius]), np.array([-8.5, -8.5, radius])]#, np.array([8.5, -8.5, radius])]
+    self.dock_offsets = np.array(([-8.5, 8.5, radius], [8.5, 8.5, radius], [-8.5, -8.5, radius], [8.5, -8.5, -1*radius], [-8.5, -8.5, -1*radius], [8.5, 8.5, -1*radius]))#, np.array([8.5, -8.5, radius])]
     super().__init__(location, radius, rotation)
-
-
-  
-  def rotate(self, dt):
-    S = math.sqrt(2*self.D_r*dt)
-    delta_eta = S * np.random.normal()
-    delta_phi = S * np.random.normal()
-    delta_theta = S * np.random.normal()
-
-    R = get_R(delta_theta, delta_phi, delta_eta)
-    self.R = np.dot(self.R, R)
-    self.dock_offsets = [np.dot(self.R, dock_offset) for dock_offset in self.dock_offsets]
-    self.dock_locations = [dock_offset + self.location for dock_offset in self.dock_offsets]
-    self.dock_locations_over_time.append(self.dock_locations.copy())
-
-    
-  
- 
 
 class Substrate(Molecule):
   def __init__(self, location, radius, rotation):
-    self.dock_offsets =[np.array([8.5, 8.5, radius]), np.array([-8.5, 8.5, radius]), np.array([8.5, -8.5, radius])]#, np.array([-8.5, -8.5, radius])]
+    self.dock_offsets = np.array(([8.5, 8.5, radius], [-8.5, 8.5, radius], [8.5, -8.5, radius], [8.5, 8.5, radius], [-8.5, 8.5, radius], [8.5, -8.5, radius]))#, np.array([-8.5, -8.5, radius])]
     super().__init__(location, radius, rotation)
-
-
 
 class FixedSubstrate(Molecule):
   def __init__(self, location, radius, rotation):
-    self.dock_offsets =[np.array([8.5, 8.5, radius]), np.array([-8.5, 8.5, radius]), np.array([8.5, -8.5, radius])]#, np.array([-8.5, -8.5, radius])]
+    self.dock_offsets = np.array(([8.5, 8.5, radius], [-8.5, 8.5, radius], [8.5, -8.5, radius]))#, np.array([-8.5, -8.5, radius])]
     super().__init__(location, radius, rotation)
+
+  def attempt_move(self, dt):
+    self.new_location = self.location
+    self.new_R = self.R
+    self.new_dock_offsets = self.dock_offsets
+    self.new_dock_locations = self.dock_locations
 
 
 def calculate_distance(location_1, location_2):
   return np.linalg.norm(location_1 - location_2) 
+
+@jit(nopython=True)
+def multiply_R(R, dock_offsets):
+  for ii in range(len(dock_offsets)):
+    dock_offsets_single = dock_offsets[ii, :]
+    ra, ca = R.shape
+    output = np.zeros(3)
+    for i in range(ra):
+      for k in range(3):
+          output[i] += R[i, k] * dock_offsets_single[k]
+    dock_offsets[ii, :] = output
+  return dock_offsets
+
+@jit(nopython=True)
+def find_new_location(D, dt, location):
+  S = np.sqrt(2*D*dt)*10**10
+  new_location = np.zeros(3)
+  for ii in range(3):
+    new_location[ii] = np.random.normal() * S + location[ii]
+  return new_location
+
+@jit(nopython=True)
+def get_new_angles(D_r, dt):
+  S = np.sqrt(2*D_r*dt)
+  delta = np.zeros(3)
+  for ii in range(3):
+    delta[ii] = S * np.random.normal()
+  return delta
+
+@jit(nopython=True)
+def get_dock_locations(offsets, location):
+  dock_locations = np.empty_like(offsets)
+  for ii in range(dock_locations.shape[0]):
+    dock_locations[ii] = offsets[ii] + location
+  return dock_locations
+
+@jit(nopython=True)
+def get_R(theta, phi, eta):
+  R_theta = np.array(((np.cos(theta), -np.sin(theta), 0.0), \
+    (np.sin(theta), np.cos(theta), 0.0), \
+    (0.0, 0.0, 1.0)))
+
+  R_phi = np.array(((np.cos(phi), 0.0, np.sin(phi)), \
+    (0.0, 1.0, 0.0), \
+    (-np.sin(phi), 0.0, np.cos(phi))))
+
+  R_eta = np.array(((1.0, 0.0, 0.0), \
+    (0.0, np.cos(eta), -np.sin(eta)), \
+    (0.0, np.sin(eta), np.cos(eta))))    
+  return np.dot(R_eta, R_phi, R_theta)

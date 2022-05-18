@@ -12,6 +12,8 @@ class ReactionTestCase(unittest.TestCase):
   def setUp(self):
 
     self.molecules_1 = [mol.Ligand([50, 50, 50], 9, [0, 0, 0]), mol.Substrate([50, 50, 66], 7, [np.pi, 0, np.pi])]
+    self.molecules_1 = [mol.Ligand([50, 50, 50], 18, [0, 0, 0]), mol.Substrate([50, 50, 86], 18, [np.pi, 0, np.pi])]
+
     self.molecules_2 = [mol.Ligand([50, 50, 50], 9, [0, 0, 0]), mol.FixedSubstrate([50, 50, 66], 7, [np.pi, 0, np.pi])]
 
     self.molecules_5 = [mol.Substrate([50, 50, 50], 9, [0, 0, 0]), mol.Ligand([50, 66, 66], 7, [0, np.pi, 0])]
@@ -26,9 +28,10 @@ class ReactionTestCase(unittest.TestCase):
     minimum_binding_docks = 3
 
     self.reaction = reac.Reaction(self.molecules_1, rend, minimum_binding_docks)
+    self.reaction.show_animation()
     self.reaction.check_reaction_status()
-    self.assertEqual(self.reaction.end_reaction, True, 'reaction ended early')
-    self.assertEqual(self.reaction.binding, True, 'reaction bound early')
+#    self.assertEqual(self.reaction.end_reaction, True, 'reaction ended early')
+    self.assertEqual(self.reaction.reaction_status, 'binding', 'reaction bound early')
     self.assertEqual(self.reaction.molecules[0].binding_partner, 2, 'wrong binding_parter')
     self.assertEqual(self.reaction.molecules[1].binding_partner, 1, 'wrong binding_parter')
     self.assertEqual(self.reaction.molecules[0].locked_partner, 2, 'wrong locked_parter')
@@ -36,7 +39,7 @@ class ReactionTestCase(unittest.TestCase):
     
     self.reaction = reac.Reaction(self.molecules_2, rend, minimum_binding_docks)
     self.reaction.check_reaction_status()
-    self.assertEqual(self.reaction.end_reaction, True, 'reaction ended early')
+ #   self.assertEqual(self.reaction.end_reaction, True, 'reaction ended early')
     self.assertEqual(self.reaction.binding, True, 'reaction bound early')
     self.assertEqual(self.reaction.molecules[0].binding_partner, 2, 'wrong binding_parter')
     self.assertEqual(self.reaction.molecules[1].binding_partner, 1, 'wrong binding_parter')
@@ -45,7 +48,7 @@ class ReactionTestCase(unittest.TestCase):
 
     self.reaction = reac.Reaction(self.molecules_5, rend, minimum_binding_docks)
     self.reaction.check_reaction_status()
-    self.assertEqual(self.reaction.end_reaction, False, 'reaction ended early')
+ #   self.assertEqual(self.reaction.end_reaction, False, 'reaction ended early')
     self.assertEqual(self.reaction.binding, False, 'reaction bound early')
     self.assertEqual(self.reaction.molecules[0].binding_partner, 0, 'wrong binding_parter')
     self.assertEqual(self.reaction.molecules[1].binding_partner, 0, 'wrong binding_parter')
