@@ -63,7 +63,7 @@ class Molecule:
     ax.set_xlim3d(-limits, limits)
     ax.set_ylim3d(-limits, limits)
     ax.set_zlim3d(-limits, limits)
-    colors = ['b', 'g', 'r', 'b', 'g', 'r']
+    colors = ['b', 'g', 'r', 'c', 'b', 'g', 'r', 'c']
     ii = 0
     for dock_locations_over_time in self.dock_locations_over_time[t_step]:
       x = np.array([self.location_over_time[t_step][0], dock_locations_over_time[0]])
@@ -76,16 +76,23 @@ class Molecule:
     x = np.cos(u)*np.sin(v) * self.radius
     y = np.sin(u)*np.sin(v) * self.radius
     z = np.cos(v) * self.radius
-    ax.plot_surface(x + self.location_over_time[t_step][0], y + self.location_over_time[t_step][1], z + self.location_over_time[t_step][2], color='r', alpha=0.5)
+    ax.plot_surface(x + self.location_over_time[t_step][0], y + self.location_over_time[t_step][1], z + self.location_over_time[t_step][2], color='r', alpha=0.3)
 
 class Ligand(Molecule):
   def __init__(self, location, radius, rotation):
-    self.dock_offsets = np.array(([-8.5, 8.5, radius], [8.5, 8.5, radius], [-8.5, -8.5, radius], [8.5, -8.5, -1*radius], [-8.5, -8.5, -1*radius], [8.5, 8.5, -1*radius]))#, np.array([8.5, -8.5, radius])]
+    dock_offsets_1 = np.array(([-8.5, 8.5, radius], [8.5, 8.5, radius], [-8.5, -8.5, radius], [8.5, -8.5, radius]))
+    dock_offsets_2 = np.array(([8.5, -8.5, -1*radius], [8.5, 8.5, -1*radius], [-8.5, -8.5, -1*radius]))
+    self.dock_offsets = dock_offsets_1
+    #self.dock_offsets = np.concatenate((dock_offsets_1, dock_offsets_2))
+    
+    
     super().__init__(location, radius, rotation)
 
 class Substrate(Molecule):
   def __init__(self, location, radius, rotation):
-    self.dock_offsets = np.array(([8.5, 8.5, radius], [-8.5, 8.5, radius], [8.5, -8.5, radius], [8.5, 8.5, radius], [-8.5, 8.5, radius], [8.5, -8.5, radius]))#, np.array([-8.5, -8.5, radius])]
+    dock_offsets_1 = np.array(([8.5, 8.5, radius], [-8.5, 8.5, radius], [8.5, -8.5, radius], [-8.5, -8.5, radius]))
+    self.dock_offsets = dock_offsets_1
+    #self.dock_offsets = np.concatenate((dock_offsets_1, dock_offsets_1))
     super().__init__(location, radius, rotation)
 
 class FixedSubstrate(Molecule):
@@ -105,15 +112,17 @@ def calculate_distance(location_1, location_2):
 
 @jit(nopython=True)
 def multiply_R(R, dock_offsets):
-  for ii in range(len(dock_offsets)):
+  nrows = dock_offsets.shape[0]
+  new_dock_offsets = np.zeros((nrows, 3))
+  for ii in range(nrows):
     dock_offsets_single = dock_offsets[ii, :]
     ra, ca = R.shape
     output = np.zeros(3)
     for i in range(ra):
       for k in range(3):
           output[i] += R[i, k] * dock_offsets_single[k]
-    dock_offsets[ii, :] = output
-  return dock_offsets
+    new_dock_offsets[ii, :] = output
+  return new_dock_offsets
 
 @jit(nopython=True)
 def find_new_location(D, dt, location):
@@ -150,5 +159,6 @@ def get_R(theta, phi, eta):
 
   R_eta = np.array(((1.0, 0.0, 0.0), \
     (0.0, np.cos(eta), -np.sin(eta)), \
-    (0.0, np.sin(eta), np.cos(eta))))    
-  return np.dot(R_eta, R_phi, R_theta)
+    (0.0, np.sin(eta), np.cos(eta))))
+  first_part = np.dot(R_eta, R_phi)
+  return np.dot(first_part, R_theta)

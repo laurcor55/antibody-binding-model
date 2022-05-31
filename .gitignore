@@ -5,3 +5,4 @@
 *.fasta
 *.svg
 venv/
+*.lprof

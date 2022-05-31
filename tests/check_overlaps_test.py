@@ -29,7 +29,7 @@ class ReactionTestCase(unittest.TestCase):
     rend = 1000
     minimum_binding_docks = 3
 
-    self.reaction = reac.Reaction(molecules, rend, minimum_binding_docks)
+    self.reaction = reac.Reaction(molecules, rend, minimum_binding_docks, 'end_at_binding')
     self.reaction.molecules[0].new_location = self.reaction.molecules[0].location
     self.reaction.molecules[1].new_location = self.reaction.molecules[1].location
     return self.reaction.check_overlaps()
