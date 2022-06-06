@@ -80,11 +80,6 @@ class Reaction:
   def end_at_binding(self):
     if self.reaction_status == 'binding' or self.minimum_substrate_ligand_dock_distance > self.rend:
       self.end_reaction = True
-  
-  def end_at_unbinding(self):
-    if self.reaction_status == 'free':
-      self.end_reaction = True
-  
     
   def check_reaction_status(self):
     if self.reaction_status_history[-1] != self.reaction_status:

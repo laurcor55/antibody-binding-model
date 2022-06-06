@@ -8,7 +8,7 @@ import time
 
 
 class Molecule:
-  def __init__(self, location, radius, rotation):
+  def __init__(self, location, radius, rotation, n_docks):
     self.radius = radius
     self.location = np.array(location, float)
     
@@ -79,28 +79,26 @@ class Molecule:
     ax.plot_surface(x + self.location_over_time[t_step][0], y + self.location_over_time[t_step][1], z + self.location_over_time[t_step][2], color='r', alpha=0.3)
 
 class Ligand(Molecule):
-  def __init__(self, location, radius, rotation):
+  def __init__(self, location, radius, rotation, n_docks):
     dock_offsets_1 = np.array(([-8.5, 8.5, radius], [8.5, 8.5, radius], [-8.5, -8.5, radius], [8.5, -8.5, radius]))
     dock_offsets_2 = np.array(([8.5, -8.5, -1*radius], [8.5, 8.5, -1*radius], [-8.5, -8.5, -1*radius], [8.5, -8.5, -1*radius]))
-   # self.dock_offsets = dock_offsets_1
-    self.dock_offsets = np.concatenate((dock_offsets_1, dock_offsets_2))
-    
-    
-    super().__init__(location, radius, rotation)
+    dock_list = np.concatenate((dock_offsets_1, dock_offsets_2))
+    self.dock_offsets = dock_list[:n_docks]
+    super().__init__(location, radius, rotation, n_docks)
 
 class Substrate(Molecule):
-  def __init__(self, location, radius, rotation):
+  def __init__(self, location, radius, rotation, n_docks):
     dock_offsets_1 = np.array(([8.5, 8.5, radius], [-8.5, 8.5, radius], [8.5, -8.5, radius], [-8.5, -8.5, radius]))
-    #self.dock_offsets = dock_offsets_1
-    self.dock_offsets = np.concatenate((dock_offsets_1, dock_offsets_1))
-    super().__init__(location, radius, rotation)
+    dock_list = np.concatenate((dock_offsets_1, dock_offsets_1))
+    self.dock_offsets = dock_list[:n_docks]
+    super().__init__(location, radius, rotation, n_docks)
 
 class FixedSubstrate(Molecule):
-  def __init__(self, location, radius, rotation):
+  def __init__(self, location, radius, rotation, n_docks):
     dock_offsets_1 = np.array(([8.5, 8.5, radius], [-8.5, 8.5, radius], [8.5, -8.5, radius], [-8.5, -8.5, radius]))
-    #self.dock_offsets = dock_offsets_1
-    self.dock_offsets = np.concatenate((dock_offsets_1, dock_offsets_1))
-    super().__init__(location, radius, rotation)
+    dock_list = np.concatenate((dock_offsets_1, dock_offsets_1))
+    self.dock_offsets = dock_list[:n_docks]
+    super().__init__(location, radius, rotation, n_docks)
 
   def attempt_move(self, dt):
     self.new_location = self.location
