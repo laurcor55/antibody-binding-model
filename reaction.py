@@ -109,7 +109,7 @@ class Reaction:
     D = D_ligand + D_substrate
 
     distance = (distance_min_overall ) *1e-10 # meters
-    lamda = 1
+    lamda = 5
     self.dt = 1/(12*D)*(distance/lamda)**2
     if self.reaction_status == 'binding':
       self.dt = 1e-5
@@ -146,16 +146,10 @@ class Reaction:
       for molecule in self.molecules:
         if molecule.locked_partner < 1 and molecule.binding_partner < 1:
           molecule.attempt_move(self.dt)
-        elif molecule.binding_partner > 0:
-          if type(molecule) == mol.Ligand:
+        elif type(molecule) == mol.Ligand:
             ligand = molecule
             substrate = self.molecules[molecule.binding_partner-1]
-            self.find_bound_location_3(substrate, ligand)
-        elif molecule.locked_partner > 0:
-          if type(molecule) == mol.Ligand:
-            ligand = molecule
-            substrate = self.molecules[molecule.binding_partner-1]
-            self.find_bound_location_2(substrate, ligand)
+            self.find_locked_location(substrate, ligand)
       no_overlaps_found = self.check_overlaps()
 
   def check_overlaps(self):
@@ -170,24 +164,8 @@ class Reaction:
             no_overlaps_found = False
     return no_overlaps_found
   
-  
-  def find_bound_location(self, substrate, ligand):
-    substrate.attempt_move(self.dt)
-    ligand.attempt_move(self.dt)
 
-    U1 = get_U(substrate.dock_locations, ligand.dock_locations, self.binding_distance)
-    U2 = get_U(substrate.new_dock_locations, ligand.new_dock_locations, self.binding_distance)
-    dU = np.sum(U2 - U1)
-    if dU > 0:
-      delta_G = -1*dU
-      return_to_old_location = determine_thermodynamics(delta_G, self.dt)
-    else:
-      return_to_old_location = False
-    if return_to_old_location == True:
-      substrate.move_back()
-      ligand.move_back()
-
-  def find_bound_location_2(self, substrate, ligand):
+  def find_locked_location(self, substrate, ligand):
     distances = calculate_distance_docks_2(substrate.dock_locations, ligand.dock_locations)
     old_bound_count = count_bound_docks(distances, self.binding_distance)
     substrate.attempt_move(self.dt)
@@ -196,42 +174,14 @@ class Reaction:
     distances = calculate_distance_docks_2(substrate.new_dock_locations, ligand.new_dock_locations)
     new_bound_count = count_bound_docks(distances, self.binding_distance)
 
-    if new_bound_count < old_bound_count:
-      if old_bound_count == 2:
-        delta_G = -7.1
-      else:
-        if new_bound_count == 2:
-          delta_G = -11.5 
-        else:
-          delta_G = -18.6
-      return_to_old_location = determine_thermodynamics(delta_G, self.dt)
+    if new_bound_count < 2:
+      return_to_old_location = determine_thermodynamics(-7.1)
       if return_to_old_location:
         substrate.move_back()
         ligand.move_back()
-  
-  def find_bound_location_3(self, substrate, ligand):
-    distances = calculate_distance_docks_2(substrate.dock_locations, ligand.dock_locations)
-    old_bound_count = count_bound_docks(distances, self.binding_distance)
-    substrate.attempt_move(self.dt)
-    ligand.attempt_move(self.dt)
-    
-    distances = calculate_distance_docks_2(substrate.new_dock_locations, ligand.new_dock_locations)
-    new_bound_count = count_bound_docks(distances, self.binding_distance)
-
-    if new_bound_count < old_bound_count:
-      k_off = 0.2
-      P_off = k_off*self.dt
-      number = np.random.uniform(0, 1, 1)
-      if number >= P_off:
-        substrate.move_back()
-        ligand.move_back()
-        
-
-
-
 
 @jit(nopython=True)
-def determine_thermodynamics(delta_G, dt):
+def determine_thermodynamics(delta_G):
   Poff = np.exp(delta_G)
   number = np.random.uniform(0, 1, 1)
   if number < Poff:
@@ -258,17 +208,3 @@ def count_bound_docks(distances, binding_distance):
     if distance <= binding_distance:
       bound += 1
   return bound
-
-def get_U(substrate_dock_locations, ligand_dock_locations, binding_distance):
-  EI = 4.7e-24 # Nm^2
-  E = EI/1.8e-32 #N/m^2
-  klong = E*(2.7e-9*5.15e-9)/4e-9 #N/m
-  klongi = klong/4
- # klongi = 2e6*1e-7/4
-  kB=1.38e-23
-  T=297
-  distances = calculate_distance_docks_2(substrate_dock_locations, ligand_dock_locations)
-  r = np.multiply(distances, 1e-10) 
-  bound = np.array(distances, float) <= binding_distance
-  result = (klongi*r**2)/(kB*T)*bound 
-  return result

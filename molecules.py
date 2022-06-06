@@ -81,9 +81,9 @@ class Molecule:
 class Ligand(Molecule):
   def __init__(self, location, radius, rotation):
     dock_offsets_1 = np.array(([-8.5, 8.5, radius], [8.5, 8.5, radius], [-8.5, -8.5, radius], [8.5, -8.5, radius]))
-    dock_offsets_2 = np.array(([8.5, -8.5, -1*radius], [8.5, 8.5, -1*radius], [-8.5, -8.5, -1*radius]))
-    self.dock_offsets = dock_offsets_1
-    #self.dock_offsets = np.concatenate((dock_offsets_1, dock_offsets_2))
+    dock_offsets_2 = np.array(([8.5, -8.5, -1*radius], [8.5, 8.5, -1*radius], [-8.5, -8.5, -1*radius], [8.5, -8.5, -1*radius]))
+   # self.dock_offsets = dock_offsets_1
+    self.dock_offsets = np.concatenate((dock_offsets_1, dock_offsets_2))
     
     
     super().__init__(location, radius, rotation)
@@ -91,13 +91,15 @@ class Ligand(Molecule):
 class Substrate(Molecule):
   def __init__(self, location, radius, rotation):
     dock_offsets_1 = np.array(([8.5, 8.5, radius], [-8.5, 8.5, radius], [8.5, -8.5, radius], [-8.5, -8.5, radius]))
-    self.dock_offsets = dock_offsets_1
-    #self.dock_offsets = np.concatenate((dock_offsets_1, dock_offsets_1))
+    #self.dock_offsets = dock_offsets_1
+    self.dock_offsets = np.concatenate((dock_offsets_1, dock_offsets_1))
     super().__init__(location, radius, rotation)
 
 class FixedSubstrate(Molecule):
   def __init__(self, location, radius, rotation):
-    self.dock_offsets = np.array(([8.5, 8.5, radius], [-8.5, 8.5, radius], [8.5, -8.5, radius]))#, np.array([-8.5, -8.5, radius])]
+    dock_offsets_1 = np.array(([8.5, 8.5, radius], [-8.5, 8.5, radius], [8.5, -8.5, radius], [-8.5, -8.5, radius]))
+    #self.dock_offsets = dock_offsets_1
+    self.dock_offsets = np.concatenate((dock_offsets_1, dock_offsets_1))
     super().__init__(location, radius, rotation)
 
   def attempt_move(self, dt):

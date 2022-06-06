@@ -1,0 +1,7 @@
+ligand_x, ligand_y, ligand_z, substrate_x, substrate_y, substrate_z, ligand_orientation_x, ligand_orientation_y, ligand_orientation_z, substrate_orientation_x, substrate_orientation_y, substrate_orientation_z, p_on, k_on
+0, 0, 39, 0, 0, 0, 0, 0, 0, 0, np.pi, 0, 4.851485e-01, 4.337150e+09
+0, 0, 40, 0, 0, 0, 0, 0, 0, 0, np.pi, 0, 3.086420e-01, 2.954344e+09
+0, 0, 42, 0, 0, 0, 0, 0, 0, 0, np.pi, 0, 1.347518e-01, 1.426228e+09 
+0, 0, 48, 0, 0, 0, 0, 0, 0, 0, np.pi, 0, 2.850356e-02, 3.679185e+08
+0, 0, 54, 0, 0, 0, 0, 0, 0, 0, np.pi, 0, 4.453241e-03, 6.781861e+07
+
