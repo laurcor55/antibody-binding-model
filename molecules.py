@@ -5,13 +5,16 @@ from scipy.spatial.transform import Rotation as R
 from numba import jit
 import time
 
-
-
 class Molecule:
   def __init__(self, location, radius, rotation, n_docks):
     self.radius = radius
     self.location = np.array(location, float)
+    self.rotation = rotation
+    self.n_docks = n_docks
+
+    self.init_calculations()
     
+  def init_calculations(self):
     temperature = 298
     boltzmann = 1.380649e-23
     viscocity = 8.9e-4
@@ -20,7 +23,7 @@ class Molecule:
 
     self.binding_partner = 0
     self.locked_partner = 0
-    self.R = get_R(rotation[0], rotation[1], rotation[2])
+    self.R = get_R(self.rotation[0], self.rotation[1], self.rotation[2])
     self.new_location = self.location
     self.location_over_time = [self.location]
     self.dock_offsets = multiply_R(self.R, self.dock_offsets)
@@ -45,15 +48,14 @@ class Molecule:
     self.R = self.new_R
     self.dock_offsets = self.new_dock_offsets
     self.dock_locations = self.new_dock_locations
-    self.location_over_time.append(self.location.copy())    
-    self.dock_locations_over_time.append(self.dock_locations.copy())
+    #self.location_over_time.append(self.location.copy())    
+    #self.dock_locations_over_time.append(self.dock_locations.copy())
   
   def move_back(self):
     self.new_location = self.location
     self.new_R = self.R
     self.new_dock_offsets = self.dock_offsets
     self.new_dock_locations = self.dock_locations
-
   
   def set_id(self, id):
     self.id = id
@@ -77,6 +79,10 @@ class Molecule:
     y = np.sin(u)*np.sin(v) * self.radius
     z = np.cos(v) * self.radius
     ax.plot_surface(x + self.location_over_time[t_step][0], y + self.location_over_time[t_step][1], z + self.location_over_time[t_step][2], color='r', alpha=0.3)
+  
+  def status(self):
+    result = {'type': str(type(self)), 'n_docks': self.n_docks, 'radius': self.radius, 'rotation': self.rotation, 'location': self.location.tolist()}
+    return result
 
 class Ligand(Molecule):
   def __init__(self, location, radius, rotation, n_docks):
