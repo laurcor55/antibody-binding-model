@@ -970,5 +970,1067 @@
                 ]
             }
         ]
+    },
+    {
+        "reaction": {
+            "total_count": 61,
+            "binding_count": 20,
+            "minimum_binding_docks": 3
+        },
+        "ligand": {
+            "type": "<class 'molecules.Ligand'>",
+            "n_docks": 4,
+            "radius": 18,
+            "rotation": [
+                0,
+                3.141592653589793,
+                0
+            ],
+            "location": [
+                0.0,
+                0.0,
+                40.0
+            ]
+        },
+        "substrates": [
+            {
+                "type": "<class 'molecules.FixedSubstrate'>",
+                "n_docks": 4,
+                "radius": 18,
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "location": [
+                    0.0,
+                    0.0,
+                    0.0
+                ]
+            },
+            {
+                "type": "<class 'molecules.FixedSubstrate'>",
+                "n_docks": 4,
+                "radius": 18,
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "location": [
+                    0.0,
+                    40.0,
+                    0.0
+                ]
+            },
+            {
+                "type": "<class 'molecules.FixedSubstrate'>",
+                "n_docks": 4,
+                "radius": 18,
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "location": [
+                    0.0,
+                    -40.0,
+                    0.0
+                ]
+            },
+            {
+                "type": "<class 'molecules.FixedSubstrate'>",
+                "n_docks": 4,
+                "radius": 18,
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "location": [
+                    40.0,
+                    0.0,
+                    0.0
+                ]
+            }
+        ]
+    },
+    {
+        "reaction": {
+            "total_count": 211,
+            "binding_count": 20,
+            "minimum_binding_docks": 3
+        },
+        "ligand": {
+            "type": "<class 'molecules.Ligand'>",
+            "n_docks": 4,
+            "radius": 18,
+            "rotation": [
+                0,
+                3.141592653589793,
+                0
+            ],
+            "location": [
+                0.0,
+                0.0,
+                44.0
+            ]
+        },
+        "substrates": [
+            {
+                "type": "<class 'molecules.FixedSubstrate'>",
+                "n_docks": 4,
+                "radius": 18,
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "location": [
+                    0.0,
+                    0.0,
+                    0.0
+                ]
+            },
+            {
+                "type": "<class 'molecules.FixedSubstrate'>",
+                "n_docks": 4,
+                "radius": 18,
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "location": [
+                    0.0,
+                    40.0,
+                    0.0
+                ]
+            },
+            {
+                "type": "<class 'molecules.FixedSubstrate'>",
+                "n_docks": 4,
+                "radius": 18,
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "location": [
+                    0.0,
+                    -40.0,
+                    0.0
+                ]
+            },
+            {
+                "type": "<class 'molecules.FixedSubstrate'>",
+                "n_docks": 4,
+                "radius": 18,
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "location": [
+                    40.0,
+                    0.0,
+                    0.0
+                ]
+            }
+        ]
+    },
+    {
+        "reaction": {
+            "total_count": 952,
+            "binding_count": 20,
+            "minimum_binding_docks": 3
+        },
+        "ligand": {
+            "type": "<class 'molecules.Ligand'>",
+            "n_docks": 4,
+            "radius": 18,
+            "rotation": [
+                0,
+                3.141592653589793,
+                0
+            ],
+            "location": [
+                0.0,
+                0.0,
+                48.0
+            ]
+        },
+        "substrates": [
+            {
+                "type": "<class 'molecules.FixedSubstrate'>",
+                "n_docks": 4,
+                "radius": 18,
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "location": [
+                    0.0,
+                    0.0,
+                    0.0
+                ]
+            },
+            {
+                "type": "<class 'molecules.FixedSubstrate'>",
+                "n_docks": 4,
+                "radius": 18,
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "location": [
+                    0.0,
+                    40.0,
+                    0.0
+                ]
+            },
+            {
+                "type": "<class 'molecules.FixedSubstrate'>",
+                "n_docks": 4,
+                "radius": 18,
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "location": [
+                    0.0,
+                    -40.0,
+                    0.0
+                ]
+            },
+            {
+                "type": "<class 'molecules.FixedSubstrate'>",
+                "n_docks": 4,
+                "radius": 18,
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "location": [
+                    40.0,
+                    0.0,
+                    0.0
+                ]
+            }
+        ]
+    },
+    {
+        "reaction": {
+            "total_count": 1674,
+            "binding_count": 20,
+            "minimum_binding_docks": 3
+        },
+        "ligand": {
+            "type": "<class 'molecules.Ligand'>",
+            "n_docks": 4,
+            "radius": 18,
+            "rotation": [
+                0,
+                3.141592653589793,
+                0
+            ],
+            "location": [
+                0.0,
+                0.0,
+                52.0
+            ]
+        },
+        "substrates": [
+            {
+                "type": "<class 'molecules.FixedSubstrate'>",
+                "n_docks": 4,
+                "radius": 18,
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "location": [
+                    0.0,
+                    0.0,
+                    0.0
+                ]
+            },
+            {
+                "type": "<class 'molecules.FixedSubstrate'>",
+                "n_docks": 4,
+                "radius": 18,
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "location": [
+                    0.0,
+                    40.0,
+                    0.0
+                ]
+            },
+            {
+                "type": "<class 'molecules.FixedSubstrate'>",
+                "n_docks": 4,
+                "radius": 18,
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "location": [
+                    0.0,
+                    -40.0,
+                    0.0
+                ]
+            },
+            {
+                "type": "<class 'molecules.FixedSubstrate'>",
+                "n_docks": 4,
+                "radius": 18,
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "location": [
+                    40.0,
+                    0.0,
+                    0.0
+                ]
+            }
+        ]
+    },
+    {
+        "reaction": {
+            "total_count": 4459,
+            "binding_count": 20,
+            "minimum_binding_docks": 3
+        },
+        "ligand": {
+            "type": "<class 'molecules.Ligand'>",
+            "n_docks": 4,
+            "radius": 18,
+            "rotation": [
+                0,
+                3.141592653589793,
+                0
+            ],
+            "location": [
+                0.0,
+                0.0,
+                56.0
+            ]
+        },
+        "substrates": [
+            {
+                "type": "<class 'molecules.FixedSubstrate'>",
+                "n_docks": 4,
+                "radius": 18,
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "location": [
+                    0.0,
+                    0.0,
+                    0.0
+                ]
+            },
+            {
+                "type": "<class 'molecules.FixedSubstrate'>",
+                "n_docks": 4,
+                "radius": 18,
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "location": [
+                    0.0,
+                    40.0,
+                    0.0
+                ]
+            },
+            {
+                "type": "<class 'molecules.FixedSubstrate'>",
+                "n_docks": 4,
+                "radius": 18,
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "location": [
+                    0.0,
+                    -40.0,
+                    0.0
+                ]
+            },
+            {
+                "type": "<class 'molecules.FixedSubstrate'>",
+                "n_docks": 4,
+                "radius": 18,
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "location": [
+                    40.0,
+                    0.0,
+                    0.0
+                ]
+            }
+        ]
+    },
+    {
+        "reaction": {
+            "total_count": 50,
+            "binding_count": 20,
+            "minimum_binding_docks": 3
+        },
+        "ligand": {
+            "type": "<class 'molecules.Ligand'>",
+            "n_docks": 4,
+            "radius": 18,
+            "rotation": [
+                0,
+                3.141592653589793,
+                0
+            ],
+            "location": [
+                0.0,
+                0.0,
+                40.0
+            ]
+        },
+        "substrates": [
+            {
+                "type": "<class 'molecules.FixedSubstrate'>",
+                "n_docks": 4,
+                "radius": 18,
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "location": [
+                    0.0,
+                    0.0,
+                    0.0
+                ]
+            },
+            {
+                "type": "<class 'molecules.FixedSubstrate'>",
+                "n_docks": 4,
+                "radius": 18,
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "location": [
+                    0.0,
+                    40.0,
+                    0.0
+                ]
+            },
+            {
+                "type": "<class 'molecules.FixedSubstrate'>",
+                "n_docks": 4,
+                "radius": 18,
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "location": [
+                    0.0,
+                    -40.0,
+                    0.0
+                ]
+            }
+        ]
+    },
+    {
+        "reaction": {
+            "total_count": 294,
+            "binding_count": 20,
+            "minimum_binding_docks": 3
+        },
+        "ligand": {
+            "type": "<class 'molecules.Ligand'>",
+            "n_docks": 4,
+            "radius": 18,
+            "rotation": [
+                0,
+                3.141592653589793,
+                0
+            ],
+            "location": [
+                0.0,
+                0.0,
+                44.0
+            ]
+        },
+        "substrates": [
+            {
+                "type": "<class 'molecules.FixedSubstrate'>",
+                "n_docks": 4,
+                "radius": 18,
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "location": [
+                    0.0,
+                    0.0,
+                    0.0
+                ]
+            },
+            {
+                "type": "<class 'molecules.FixedSubstrate'>",
+                "n_docks": 4,
+                "radius": 18,
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "location": [
+                    0.0,
+                    40.0,
+                    0.0
+                ]
+            },
+            {
+                "type": "<class 'molecules.FixedSubstrate'>",
+                "n_docks": 4,
+                "radius": 18,
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "location": [
+                    0.0,
+                    -40.0,
+                    0.0
+                ]
+            }
+        ]
+    },
+    {
+        "reaction": {
+            "total_count": 1742,
+            "binding_count": 20,
+            "minimum_binding_docks": 3
+        },
+        "ligand": {
+            "type": "<class 'molecules.Ligand'>",
+            "n_docks": 4,
+            "radius": 18,
+            "rotation": [
+                0,
+                3.141592653589793,
+                0
+            ],
+            "location": [
+                0.0,
+                0.0,
+                48.0
+            ]
+        },
+        "substrates": [
+            {
+                "type": "<class 'molecules.FixedSubstrate'>",
+                "n_docks": 4,
+                "radius": 18,
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "location": [
+                    0.0,
+                    0.0,
+                    0.0
+                ]
+            },
+            {
+                "type": "<class 'molecules.FixedSubstrate'>",
+                "n_docks": 4,
+                "radius": 18,
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "location": [
+                    0.0,
+                    40.0,
+                    0.0
+                ]
+            },
+            {
+                "type": "<class 'molecules.FixedSubstrate'>",
+                "n_docks": 4,
+                "radius": 18,
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "location": [
+                    0.0,
+                    -40.0,
+                    0.0
+                ]
+            }
+        ]
+    },
+    {
+        "reaction": {
+            "total_count": 1929,
+            "binding_count": 20,
+            "minimum_binding_docks": 3
+        },
+        "ligand": {
+            "type": "<class 'molecules.Ligand'>",
+            "n_docks": 4,
+            "radius": 18,
+            "rotation": [
+                0,
+                3.141592653589793,
+                0
+            ],
+            "location": [
+                0.0,
+                0.0,
+                52.0
+            ]
+        },
+        "substrates": [
+            {
+                "type": "<class 'molecules.FixedSubstrate'>",
+                "n_docks": 4,
+                "radius": 18,
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "location": [
+                    0.0,
+                    0.0,
+                    0.0
+                ]
+            },
+            {
+                "type": "<class 'molecules.FixedSubstrate'>",
+                "n_docks": 4,
+                "radius": 18,
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "location": [
+                    0.0,
+                    40.0,
+                    0.0
+                ]
+            },
+            {
+                "type": "<class 'molecules.FixedSubstrate'>",
+                "n_docks": 4,
+                "radius": 18,
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "location": [
+                    0.0,
+                    -40.0,
+                    0.0
+                ]
+            }
+        ]
+    },
+    {
+        "reaction": {
+            "total_count": 4709,
+            "binding_count": 20,
+            "minimum_binding_docks": 3
+        },
+        "ligand": {
+            "type": "<class 'molecules.Ligand'>",
+            "n_docks": 4,
+            "radius": 18,
+            "rotation": [
+                0,
+                3.141592653589793,
+                0
+            ],
+            "location": [
+                0.0,
+                0.0,
+                56.0
+            ]
+        },
+        "substrates": [
+            {
+                "type": "<class 'molecules.FixedSubstrate'>",
+                "n_docks": 4,
+                "radius": 18,
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "location": [
+                    0.0,
+                    0.0,
+                    0.0
+                ]
+            },
+            {
+                "type": "<class 'molecules.FixedSubstrate'>",
+                "n_docks": 4,
+                "radius": 18,
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "location": [
+                    0.0,
+                    40.0,
+                    0.0
+                ]
+            },
+            {
+                "type": "<class 'molecules.FixedSubstrate'>",
+                "n_docks": 4,
+                "radius": 18,
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "location": [
+                    0.0,
+                    -40.0,
+                    0.0
+                ]
+            }
+        ]
+    },
+    {
+        "reaction": {
+            "total_count": 48,
+            "binding_count": 20,
+            "minimum_binding_docks": 3
+        },
+        "ligand": {
+            "type": "<class 'molecules.Ligand'>",
+            "n_docks": 4,
+            "radius": 18,
+            "rotation": [
+                0,
+                3.141592653589793,
+                0
+            ],
+            "location": [
+                0.0,
+                0.0,
+                40.0
+            ]
+        },
+        "substrates": [
+            {
+                "type": "<class 'molecules.FixedSubstrate'>",
+                "n_docks": 4,
+                "radius": 18,
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "location": [
+                    0.0,
+                    0.0,
+                    0.0
+                ]
+            },
+            {
+                "type": "<class 'molecules.FixedSubstrate'>",
+                "n_docks": 4,
+                "radius": 18,
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "location": [
+                    0.0,
+                    40.0,
+                    0.0
+                ]
+            },
+            {
+                "type": "<class 'molecules.FixedSubstrate'>",
+                "n_docks": 4,
+                "radius": 18,
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "location": [
+                    0.0,
+                    -40.0,
+                    0.0
+                ]
+            },
+            {
+                "type": "<class 'molecules.FixedSubstrate'>",
+                "n_docks": 4,
+                "radius": 18,
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "location": [
+                    40.0,
+                    0.0,
+                    0.0
+                ]
+            },
+            {
+                "type": "<class 'molecules.FixedSubstrate'>",
+                "n_docks": 4,
+                "radius": 18,
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "location": [
+                    -40.0,
+                    0.0,
+                    0.0
+                ]
+            }
+        ]
+    },
+    {
+        "reaction": {
+            "total_count": 302,
+            "binding_count": 20,
+            "minimum_binding_docks": 3
+        },
+        "ligand": {
+            "type": "<class 'molecules.Ligand'>",
+            "n_docks": 4,
+            "radius": 18,
+            "rotation": [
+                0,
+                3.141592653589793,
+                0
+            ],
+            "location": [
+                0.0,
+                0.0,
+                44.0
+            ]
+        },
+        "substrates": [
+            {
+                "type": "<class 'molecules.FixedSubstrate'>",
+                "n_docks": 4,
+                "radius": 18,
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "location": [
+                    0.0,
+                    0.0,
+                    0.0
+                ]
+            },
+            {
+                "type": "<class 'molecules.FixedSubstrate'>",
+                "n_docks": 4,
+                "radius": 18,
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "location": [
+                    0.0,
+                    40.0,
+                    0.0
+                ]
+            },
+            {
+                "type": "<class 'molecules.FixedSubstrate'>",
+                "n_docks": 4,
+                "radius": 18,
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "location": [
+                    0.0,
+                    -40.0,
+                    0.0
+                ]
+            },
+            {
+                "type": "<class 'molecules.FixedSubstrate'>",
+                "n_docks": 4,
+                "radius": 18,
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "location": [
+                    40.0,
+                    0.0,
+                    0.0
+                ]
+            },
+            {
+                "type": "<class 'molecules.FixedSubstrate'>",
+                "n_docks": 4,
+                "radius": 18,
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "location": [
+                    -40.0,
+                    0.0,
+                    0.0
+                ]
+            }
+        ]
+    },
+    {
+        "reaction": {
+            "total_count": 1037,
+            "binding_count": 20,
+            "minimum_binding_docks": 3
+        },
+        "ligand": {
+            "type": "<class 'molecules.Ligand'>",
+            "n_docks": 4,
+            "radius": 18,
+            "rotation": [
+                0,
+                3.141592653589793,
+                0
+            ],
+            "location": [
+                0.0,
+                0.0,
+                48.0
+            ]
+        },
+        "substrates": [
+            {
+                "type": "<class 'molecules.FixedSubstrate'>",
+                "n_docks": 4,
+                "radius": 18,
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "location": [
+                    0.0,
+                    0.0,
+                    0.0
+                ]
+            },
+            {
+                "type": "<class 'molecules.FixedSubstrate'>",
+                "n_docks": 4,
+                "radius": 18,
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "location": [
+                    0.0,
+                    40.0,
+                    0.0
+                ]
+            },
+            {
+                "type": "<class 'molecules.FixedSubstrate'>",
+                "n_docks": 4,
+                "radius": 18,
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "location": [
+                    0.0,
+                    -40.0,
+                    0.0
+                ]
+            },
+            {
+                "type": "<class 'molecules.FixedSubstrate'>",
+                "n_docks": 4,
+                "radius": 18,
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "location": [
+                    40.0,
+                    0.0,
+                    0.0
+                ]
+            },
+            {
+                "type": "<class 'molecules.FixedSubstrate'>",
+                "n_docks": 4,
+                "radius": 18,
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "location": [
+                    -40.0,
+                    0.0,
+                    0.0
+                ]
+            }
+        ]
     }
 ]

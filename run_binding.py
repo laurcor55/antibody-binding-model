@@ -37,35 +37,36 @@ def calculate_kon(binding_count, total_count, ligand, substrates, rstart, rend):
   k = k_d_b * p /(1-(1-p)*k_d_b/k_d_c) * 1000 * NA
   return reac.scientific(k)
 
-def run_reactions(file_name, substrates_start, ligand_start):
+def run_reactions(file_name, substrates, ligand):
   minimum_binding_docks = 3
-  total_count = 100
+  total_count = 1
   rend = 200 #angstroms
   binding_count = 0
   seed = int(time.time())
   np.random.seed(seed)
-  substrates_dict = [molecule.status() for molecule in substrates_start]
-  ligand_dict = ligand_start.status()
+  substrates_dict = [molecule.status() for molecule in substrates]
+  ligand_dict = ligand.status()
+  rstart = np.linalg.norm(np.asarray(ligand.location) - np.asarray(substrates[0].location))
   kk = 0
-  while binding_count < 20:
-  #while kk < 1:
-    substrates = [copy.deepcopy(molecule) for molecule in substrates_start]
-    ligand = copy.deepcopy(ligand_start)
-    rstart = np.linalg.norm(np.asarray(ligand_location) - np.asarray(substrate_location))
   
-    reaction = reac.Reaction(ligand, substrates, rend, minimum_binding_docks)
+  reaction = reac.Reaction(ligand, substrates, rend, minimum_binding_docks)
+  
+  while binding_count < 20:
+  #while kk < total_count:
+    reaction.back_to_start()
     reaction.progress_reaction()
+    #reaction.show_animation()
     if reaction.reaction_status == 'binding':
       binding_count += 1
     if kk % 10 ==0:
       k_on = calculate_kon(binding_count, kk+1, ligand, substrates, rstart, rend)
       print(str(kk) + ' of ' + str(total_count) + ', ' + str(binding_count) + ' bound (' + reac.scientific(binding_count/(kk+1)) + '), ' +  k_on  + ' /M/s', end="\r")
     kk += 1
+
   total_count = kk
   reaction_dict = {'total_count': total_count, 'binding_count': binding_count, 'minimum_binding_docks': minimum_binding_docks}
-
   output_list = to_dict(ligand_dict, substrates_dict, reaction_dict)
-  #reaction.show_animation()
+  
   print(end='\n')
   print(binding_count)
   k_on = calculate_kon(binding_count, total_count, ligand, substrates, rstart, rend)
@@ -78,18 +79,22 @@ file_name = 'figures/6-7-22/output.json'
 
 radius = 18 # angstroms
 z_spacings = [40, 44, 48, 52, 56]
+substrate_spacing = 40
 
 for z_spacing in z_spacings:
   ligand_location = [0, 0, z_spacing]
   substrate_location = [0, 0, 0]
-  substrate_location_2 = [0, 40, 0]
-  substrate_location_3 = [0, -40, 0]
+  substrate_location_2 = [0, substrate_spacing, 0]
+  substrate_location_3 = [0, -substrate_spacing, 0]
+  substrate_location_4 = [substrate_spacing, 0, 0]
+  substrate_location_5 = [-substrate_spacing, 0, 0]
 
 
   ligand_orientation = [0, np.pi, 0]
   substrate_orientation = [0, 0, 0]
-  n_docks = 3
+  n_docks = 4
 
-  substrates_start = [mol.FixedSubstrate(substrate_location, radius, substrate_orientation, n_docks), mol.FixedSubstrate(substrate_location_2, radius, substrate_orientation, n_docks), mol.FixedSubstrate(substrate_location_3, radius, substrate_orientation, n_docks)]
+  substrates_start = [mol.FixedSubstrate(substrate_location, radius, substrate_orientation, n_docks), mol.FixedSubstrate(substrate_location_2, radius, substrate_orientation, n_docks), mol.FixedSubstrate(substrate_location_3, radius, substrate_orientation, n_docks), mol.FixedSubstrate(substrate_location_4, radius, substrate_orientation, n_docks), mol.FixedSubstrate(substrate_location_5, radius, substrate_orientation, n_docks)]
   ligand_start = mol.Ligand(ligand_location, radius, ligand_orientation, n_docks)
+  
   run_reactions(file_name, substrates_start, ligand_start)

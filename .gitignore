@@ -6,3 +6,4 @@
 *.svg
 venv/
 *.lprof
+*.out

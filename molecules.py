@@ -7,14 +7,15 @@ import time
 
 class Molecule:
   def __init__(self, location, radius, rotation, n_docks):
+    self.start_location = np.array(location, float)
+    self.start_rotation = rotation
     self.radius = radius
-    self.location = np.array(location, float)
-    self.rotation = rotation
     self.n_docks = n_docks
+    self.back_to_start()
 
-    self.init_calculations()
-    
-  def init_calculations(self):
+  def back_to_start(self):
+    self.location = self.start_location
+    self.rotation = self.start_rotation
     temperature = 298
     boltzmann = 1.380649e-23
     viscocity = 8.9e-4
@@ -25,10 +26,11 @@ class Molecule:
     self.locked_partner = 0
     self.R = get_R(self.rotation[0], self.rotation[1], self.rotation[2])
     self.new_location = self.location
-    self.location_over_time = [self.location]
+    self.location_over_time = [self.location.copy()]
+    self.get_dock_offsets()
     self.dock_offsets = multiply_R(self.R, self.dock_offsets)
     self.dock_locations = get_dock_locations(self.dock_offsets, self.location)
-    self.dock_locations_over_time = [self.dock_locations]
+    self.dock_locations_over_time = [self.dock_locations.copy()]
   
   def __repr__(self):
     x = '__________\n' 
@@ -48,8 +50,8 @@ class Molecule:
     self.R = self.new_R
     self.dock_offsets = self.new_dock_offsets
     self.dock_locations = self.new_dock_locations
-    #self.location_over_time.append(self.location.copy())    
-    #self.dock_locations_over_time.append(self.dock_locations.copy())
+    self.location_over_time.append(self.location.copy())    
+    self.dock_locations_over_time.append(self.dock_locations.copy())
   
   def move_back(self):
     self.new_location = self.location
@@ -86,25 +88,30 @@ class Molecule:
 
 class Ligand(Molecule):
   def __init__(self, location, radius, rotation, n_docks):
-    dock_offsets_1 = np.array(([-8.5, 8.5, radius], [8.5, 8.5, radius], [-8.5, -8.5, radius], [8.5, -8.5, radius]))
-    dock_offsets_2 = np.array(([8.5, -8.5, -1*radius], [8.5, 8.5, -1*radius], [-8.5, -8.5, -1*radius], [8.5, -8.5, -1*radius]))
-    dock_list = np.concatenate((dock_offsets_1, dock_offsets_2))
-    self.dock_offsets = dock_list[:n_docks]
     super().__init__(location, radius, rotation, n_docks)
+  
+  def get_dock_offsets(self):
+    dock_offsets_1 = np.array(([-8.5, 8.5, self.radius], [8.5, 8.5, self.radius], [-8.5, -8.5, self.radius], [8.5, -8.5, self.radius]))
+    dock_offsets_2 = np.array(([8.5, -8.5, -1*self.radius], [8.5, 8.5, -1*self.radius], [-8.5, -8.5, -1*self.radius], [8.5, -8.5, -1*self.radius]))
+    dock_list = np.concatenate((dock_offsets_1, dock_offsets_2))
+    self.dock_offsets = dock_list[:self.n_docks]
 
 class Substrate(Molecule):
   def __init__(self, location, radius, rotation, n_docks):
-    dock_offsets_1 = np.array(([8.5, 8.5, radius], [-8.5, 8.5, radius], [8.5, -8.5, radius], [-8.5, -8.5, radius]))
-    dock_list = np.concatenate((dock_offsets_1, dock_offsets_1))
-    self.dock_offsets = dock_list[:n_docks]
     super().__init__(location, radius, rotation, n_docks)
+  def get_dock_offsets(self):
+    dock_offsets_1 = np.array(([8.5, 8.5, self.radius], [-8.5, 8.5, self.radius], [8.5, -8.5, self.radius], [-8.5, -8.5, self.radius]))
+    dock_list = np.concatenate((dock_offsets_1, dock_offsets_1))
+    self.dock_offsets = dock_list[:self.n_docks]
 
 class FixedSubstrate(Molecule):
   def __init__(self, location, radius, rotation, n_docks):
-    dock_offsets_1 = np.array(([8.5, 8.5, radius], [-8.5, 8.5, radius], [8.5, -8.5, radius], [-8.5, -8.5, radius]))
-    dock_list = np.concatenate((dock_offsets_1, dock_offsets_1))
-    self.dock_offsets = dock_list[:n_docks]
     super().__init__(location, radius, rotation, n_docks)
+
+  def get_dock_offsets(self):
+    dock_offsets_1 = np.array(([8.5, 8.5, self.radius], [-8.5, 8.5, self.radius], [8.5, -8.5, self.radius], [-8.5, -8.5, self.radius]))
+    dock_list = np.concatenate((dock_offsets_1, dock_offsets_1))
+    self.dock_offsets = dock_list[:self.n_docks]
 
   def attempt_move(self, dt):
     self.new_location = self.location
