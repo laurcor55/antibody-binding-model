@@ -30,6 +30,7 @@ class Molecule:
     self.get_dock_offsets()
     self.dock_offsets = multiply_R(self.R, self.dock_offsets)
     self.dock_locations = get_dock_locations(self.dock_offsets, self.location)
+    self.new_dock_locations = self.dock_locations
     self.dock_locations_over_time = [self.dock_locations.copy()]
   
   def __repr__(self):

@@ -94,6 +94,7 @@ class Reaction:
     self.time += self.dt
   
   def move_molecules(self):
+    ## Note: move substrate here if adding back
     for substrate in self.substrates:
       substrate.move()
     self.ligand.move()
@@ -104,8 +105,8 @@ class Reaction:
       ligand_locked = False
       for substrate in self.substrates:
         if substrate.locked == False:
-          substrate.attempt_move(self.dt)
-        else: 
+          substrate.attempt_move(self.dt) 
+        if substrate.locked == True: 
           self.find_locked_location(substrate, self.ligand)
           ligand_locked = True
       if ligand_locked == False:
@@ -119,14 +120,14 @@ class Reaction:
 
   def check_overlaps(self):
     no_overlaps_found = True
-    n = len(self.substrates)
-    for ii in range(n-1):
-      for jj in range(ii+1, n):
-        if ii != jj:
-          double_radius = self.substrates[ii].radius + self.substrates[jj].radius
-          distance = np.linalg.norm(self.substrates[ii].new_location - self.substrates[jj].new_location)
-          if distance < double_radius:
-            no_overlaps_found = False
+    #n = len(self.substrates) ## Note: check substrate overlap here if adding back.
+    #for ii in range(n-1):
+    #  for jj in range(ii+1, n):
+    #    if ii != jj:
+    #      double_radius = self.substrates[ii].radius + self.substrates[jj].radius
+    #      distance = np.linalg.norm(self.substrates[ii].new_location - self.substrates[jj].new_location)
+    #      if distance < double_radius:
+    #        no_overlaps_found = False
     for substrate in self.substrates:
       double_radius = substrate.radius + self.ligand.radius
       distance = np.linalg.norm(substrate.new_location - self.ligand.new_location)
@@ -136,7 +137,7 @@ class Reaction:
   
 
   def find_locked_location(self, substrate, ligand):
-    substrate.attempt_move(self.dt)
+    #substrate.attempt_move(self.dt) ## Note: move substrate here if adding back
     ligand.attempt_move(self.dt)
     
     distances = calculate_distance_docks(substrate.new_dock_locations, ligand.new_dock_locations)
@@ -145,7 +146,7 @@ class Reaction:
     if new_bound_count < 2:
       return_to_old_location = determine_thermodynamics(-7.1)
       if return_to_old_location:
-        substrate.move_back()
+       # substrate.move_back() ## Note: move substrate back if adding
         ligand.move_back()
 
   def __dict__(self):

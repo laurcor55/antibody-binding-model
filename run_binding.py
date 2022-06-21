@@ -75,26 +75,31 @@ def run_reactions(file_name, substrates, ligand):
   #write_output(output_list, file_name)
 
   
-file_name = 'figures/6-7-22/output.json'
+file_name = 'figures/6-17-22/output.json'
 
 radius = 18 # angstroms
-z_spacings = [40, 44, 48, 52, 56]
-substrate_spacing = 40
+z_spacings = [44, 48, 52, 56]
+substrate_locations = [4, 8, 16, 32]
+substrate_spacing = 36
 
 for z_spacing in z_spacings:
-  ligand_location = [0, 0, z_spacing]
-  substrate_location = [0, 0, 0]
-  substrate_location_2 = [0, substrate_spacing, 0]
-  substrate_location_3 = [0, -substrate_spacing, 0]
-  substrate_location_4 = [substrate_spacing, 0, 0]
-  substrate_location_5 = [-substrate_spacing, 0, 0]
+  for substrate_location in substrate_locations:
+    ligand_location = [0, 0, z_spacing]
+    substrate_location = [0, substrate_location, 0]
+    substrate_location_2 = [0, substrate_spacing, 0]
+    substrate_location_3 = [0, -substrate_spacing, 0]
+    substrate_location_4 = [substrate_spacing, 0, 0]
+    substrate_location_5 = [-substrate_spacing, 0, 0]
+    substrate_location_6 = [substrate_spacing, substrate_spacing, 0]
+    substrate_location_7 = [-substrate_spacing, -substrate_spacing, 0]
+    substrate_location_8 = [-substrate_spacing, substrate_spacing, 0]
+    substrate_location_9 = [substrate_spacing, -substrate_spacing, 0]
 
+    ligand_orientation = [0, np.pi, np.pi/4]
+    substrate_orientation = [0, 0, 0]
+    n_docks = 4
 
-  ligand_orientation = [0, np.pi, 0]
-  substrate_orientation = [0, 0, 0]
-  n_docks = 4
-
-  substrates_start = [mol.FixedSubstrate(substrate_location, radius, substrate_orientation, n_docks), mol.FixedSubstrate(substrate_location_2, radius, substrate_orientation, n_docks), mol.FixedSubstrate(substrate_location_3, radius, substrate_orientation, n_docks), mol.FixedSubstrate(substrate_location_4, radius, substrate_orientation, n_docks), mol.FixedSubstrate(substrate_location_5, radius, substrate_orientation, n_docks)]
-  ligand_start = mol.Ligand(ligand_location, radius, ligand_orientation, n_docks)
-  
-  run_reactions(file_name, substrates_start, ligand_start)
+    substrates_start = [mol.FixedSubstrate(substrate_location, radius, substrate_orientation, n_docks)]#, mol.FixedSubstrate(substrate_location_2, radius, substrate_orientation, n_docks), mol.FixedSubstrate(substrate_location_3, radius, substrate_orientation, n_docks), mol.FixedSubstrate(substrate_location_4, radius, substrate_orientation, n_docks), mol.FixedSubstrate(substrate_location_5, radius, substrate_orientation, n_docks), mol.FixedSubstrate(substrate_location_6, radius, substrate_orientation, n_docks), mol.FixedSubstrate(substrate_location_7, radius, substrate_orientation, n_docks), mol.FixedSubstrate(substrate_location_8, radius, substrate_orientation, n_docks), mol.FixedSubstrate(substrate_location_9, radius, substrate_orientation, n_docks)]
+    ligand_start = mol.Ligand(ligand_location, radius, ligand_orientation, n_docks)
+    
+    run_reactions(file_name, substrates_start, ligand_start)
