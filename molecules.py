@@ -22,8 +22,24 @@ class Molecule:
     self.D = boltzmann * temperature /(6*np.pi*viscocity*self.radius*1e-10) #m2/s
     self.D_r = boltzmann * temperature/(8*np.pi*viscocity*(self.radius*1e-10)**3)
 
-    self.binding_partner = 0
-    self.locked_partner = 0
+    self.R = get_R(self.rotation[0], self.rotation[1], self.rotation[2])
+    self.new_location = self.location
+    self.location_over_time = [self.location.copy()]
+    self.get_dock_offsets()
+    self.dock_offsets = multiply_R(self.R, self.dock_offsets)
+    self.dock_locations = get_dock_locations(self.dock_offsets, self.location)
+    self.new_dock_locations = self.dock_locations
+    self.dock_locations_over_time = [self.dock_locations.copy()]
+
+  def reset_to_rotation(self, rotation):
+    self.location = self.start_location
+    self.rotation = rotation
+    temperature = 298
+    boltzmann = 1.380649e-23
+    viscocity = 8.9e-4
+    self.D = boltzmann * temperature /(6*np.pi*viscocity*self.radius*1e-10) #m2/s
+    self.D_r = boltzmann * temperature/(8*np.pi*viscocity*(self.radius*1e-10)**3)
+
     self.R = get_R(self.rotation[0], self.rotation[1], self.rotation[2])
     self.new_location = self.location
     self.location_over_time = [self.location.copy()]
@@ -51,8 +67,8 @@ class Molecule:
     self.R = self.new_R
     self.dock_offsets = self.new_dock_offsets
     self.dock_locations = self.new_dock_locations
-    self.location_over_time.append(self.location.copy())    
-    self.dock_locations_over_time.append(self.dock_locations.copy())
+   # self.location_over_time.append(self.location.copy())    
+    #self.dock_locations_over_time.append(self.dock_locations.copy())
   
   def move_back(self):
     self.new_location = self.location
@@ -93,7 +109,8 @@ class Ligand(Molecule):
   
   def get_dock_offsets(self):
     dock_offsets_1 = np.array(([-8.5, 8.5, self.radius], [8.5, 8.5, self.radius], [-8.5, -8.5, self.radius], [8.5, -8.5, self.radius]))
-    dock_offsets_2 = np.array(([8.5, -8.5, -1*self.radius], [8.5, 8.5, -1*self.radius], [-8.5, -8.5, -1*self.radius], [8.5, -8.5, -1*self.radius]))
+    #dock_offsets_2 = np.array(([8.5, -8.5, -1*self.radius], [8.5, 8.5, -1*self.radius], [-8.5, -8.5, -1*self.radius], [8.5, -8.5, -1*self.radius]))
+    dock_offsets_2 = np.array(([self.radius, -8.5, 8.5], [self.radius, 8.5, 8.5], [self.radius, -8.5, -8.5], [self.radius, 8.5, -8.5]))
     dock_list = np.concatenate((dock_offsets_1, dock_offsets_2))
     self.dock_offsets = dock_list[:self.n_docks]
 

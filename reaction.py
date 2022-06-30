@@ -28,9 +28,18 @@ class Reaction:
     self.end_reaction = False
     self.time = 0
     self.reaction_status = 'free'
-    self.calculate_dt()
     [substrate.back_to_start() for substrate in self.substrates]
     self.ligand.back_to_start()
+    self.calculate_dt()
+    self.check_molecule_status()
+
+  def reset_molecules_to_rotation(self):
+    self.end_reaction = False
+    self.time = 0
+    self.reaction_status = 'free'
+    [substrate.reset_to_rotation([0, 0, 0]) for substrate in self.substrates]
+    self.ligand.reset_to_rotation([0, 0, 0])
+    self.calculate_dt()
     self.check_molecule_status()
 
   def progress_reaction(self):
@@ -60,12 +69,9 @@ class Reaction:
       self.end_reaction = True
 
   def calculate_dt(self):
-    D_ligand = self.ligand.D
-    D_substrate = self.substrates[0].D
-    D = D_ligand + D_substrate
     distance = self.minimum_substrate_ligand_dock_distance *1e-10 # meters
     lamda = 5
-    self.dt = 1/(12*D)*(distance/lamda)**2
+    self.dt = 1/(12*self.ligand.D)*(distance/lamda)**2
  
   def show_animation(self):
     self.fig = plt.figure()
