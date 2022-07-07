@@ -17,16 +17,16 @@ class ReactionTestCase(unittest.TestCase):
 
     ligand_orientation = [0, np.pi, 0]
     substrate_orientation = [0, 0, 0]
-    n_docks = 4
-    self.ligand_1 = mol.Ligand(ligand_location, radius, ligand_orientation, n_docks)
-    self.substrates_1 = [mol.FixedSubstrate(substrate_location, radius, substrate_orientation, n_docks), mol.FixedSubstrate(substrate_location_2, radius, substrate_orientation, n_docks)]
+    dock_rotations = [[0, 0, 0]]
+    self.ligand_1 = mol.Ligand(ligand_location, radius, ligand_orientation, dock_rotations)
+    self.substrates_1 = [mol.FixedSubstrate(substrate_location, radius, substrate_orientation, dock_rotations), mol.FixedSubstrate(substrate_location_2, radius, substrate_orientation, dock_rotations)]
 
     ligand_location = [0, 0, 30]
     substrate_location = [0, 0, 0]
     substrate_location_2 = [0, 50, 0]
 
-    self.ligand_2 = mol.Ligand(ligand_location, radius, ligand_orientation, n_docks)
-    self.substrates_2 = [mol.FixedSubstrate(substrate_location, radius, substrate_orientation, n_docks), mol.FixedSubstrate(substrate_location_2, radius, substrate_orientation, n_docks)]
+    self.ligand_2 = mol.Ligand(ligand_location, radius, ligand_orientation, dock_rotations)
+    self.substrates_2 = [mol.FixedSubstrate(substrate_location, radius, substrate_orientation, dock_rotations), mol.FixedSubstrate(substrate_location_2, radius, substrate_orientation, dock_rotations)]
 
   def run_check_overlaps(self, ligand, substrates):
     rend = 1000

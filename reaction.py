@@ -100,7 +100,6 @@ class Reaction:
     self.time += self.dt
   
   def move_molecules(self):
-    ## Note: move substrate here if adding back
     for substrate in self.substrates:
       substrate.move()
     self.ligand.move()
@@ -143,16 +142,14 @@ class Reaction:
   
 
   def find_locked_location(self, substrate, ligand):
-    #substrate.attempt_move(self.dt) ## Note: move substrate here if adding back
+    substrate.attempt_move(self.dt)
     ligand.attempt_move(self.dt)
-    
     distances = calculate_distance_docks(substrate.new_dock_locations, ligand.new_dock_locations)
     new_bound_count = count_bound_docks(distances, self.binding_distance)
-
     if new_bound_count < 2:
       return_to_old_location = determine_thermodynamics(-7.1)
       if return_to_old_location:
-       # substrate.move_back() ## Note: move substrate back if adding
+        substrate.move_back() 
         ligand.move_back()
 
   def __dict__(self):

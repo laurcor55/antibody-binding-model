@@ -52,7 +52,7 @@ def run_reactions(file_name, substrates, ligand):
   reaction = reac.Reaction(ligand, substrates, rend, minimum_binding_docks)
   center_binding_count = 0
   
-  while binding_count < 20:
+  while binding_count < 40:
   #while kk < total_count:
     reaction.back_to_start()
     reaction.progress_reaction()
@@ -81,12 +81,14 @@ def run_reactions(file_name, substrates, ligand):
     write_output(output_list, file_name)
 
   
-file_name = 'figures/6-29-22/output.json'
+file_name = 'figures/7-1-22/output.json'
 
 radius = 18 # angstroms
-z_spacings = [40, 42, 44, 46, 48]
-degs = [2, 4, 8]
+z_spacings = [40, 42, 44]
+degs = [0, 2, 4, 8]
 substrate_spacing = 36
+dock_rotations = [[0, 0, 0], [0, np.pi/4, 0]]
+
 for z_spacing in z_spacings:
   for deg in degs:
     ligand_location = [0, 0, z_spacing]
@@ -102,9 +104,8 @@ for z_spacing in z_spacings:
 
     ligand_orientation = [0, np.pi - deg*0.0174533, 0]
     substrate_orientation = [0, 0, 0]
-    n_docks = 8
 
-    substrates_start = [mol.FixedSubstrate(substrate_location, radius, substrate_orientation, n_docks), mol.FixedSubstrate(substrate_location_2, radius, substrate_orientation, n_docks), mol.FixedSubstrate(substrate_location_3, radius, substrate_orientation, n_docks), mol.FixedSubstrate(substrate_location_4, radius, substrate_orientation, n_docks), mol.FixedSubstrate(substrate_location_5, radius, substrate_orientation, n_docks), mol.FixedSubstrate(substrate_location_6, radius, substrate_orientation, n_docks), mol.FixedSubstrate(substrate_location_7, radius, substrate_orientation, n_docks), mol.FixedSubstrate(substrate_location_8, radius, substrate_orientation, n_docks), mol.FixedSubstrate(substrate_location_9, radius, substrate_orientation, n_docks)]
-    ligand_start = mol.Ligand(ligand_location, radius, ligand_orientation, n_docks)
+    substrates_start = [mol.FixedSubstrate(substrate_location, radius, substrate_orientation, dock_rotations), mol.FixedSubstrate(substrate_location_2, radius, substrate_orientation, dock_rotations), mol.FixedSubstrate(substrate_location_3, radius, substrate_orientation, dock_rotations), mol.FixedSubstrate(substrate_location_4, radius, substrate_orientation, dock_rotations), mol.FixedSubstrate(substrate_location_5, radius, substrate_orientation, dock_rotations), mol.FixedSubstrate(substrate_location_6, radius, substrate_orientation, dock_rotations), mol.FixedSubstrate(substrate_location_7, radius, substrate_orientation, dock_rotations), mol.FixedSubstrate(substrate_location_8, radius, substrate_orientation, dock_rotations), mol.FixedSubstrate(substrate_location_9, radius, substrate_orientation, dock_rotations)]
+    ligand_start = mol.Ligand(ligand_location, radius, ligand_orientation, dock_rotations)
     
     run_reactions(file_name, substrates_start, ligand_start)

@@ -6,34 +6,17 @@ from numba import jit
 import time
 
 class Molecule:
-  def __init__(self, location, radius, rotation, n_docks):
+  def __init__(self, location, radius, rotation, dock_rotations):
     self.start_location = np.array(location, float)
     self.start_rotation = rotation
     self.radius = radius
-    self.n_docks = n_docks
+    self.dock_rotations = dock_rotations
+    self.n_docks = len(dock_rotations)
     self.back_to_start()
 
   def back_to_start(self):
     self.location = self.start_location
     self.rotation = self.start_rotation
-    temperature = 298
-    boltzmann = 1.380649e-23
-    viscocity = 8.9e-4
-    self.D = boltzmann * temperature /(6*np.pi*viscocity*self.radius*1e-10) #m2/s
-    self.D_r = boltzmann * temperature/(8*np.pi*viscocity*(self.radius*1e-10)**3)
-
-    self.R = get_R(self.rotation[0], self.rotation[1], self.rotation[2])
-    self.new_location = self.location
-    self.location_over_time = [self.location.copy()]
-    self.get_dock_offsets()
-    self.dock_offsets = multiply_R(self.R, self.dock_offsets)
-    self.dock_locations = get_dock_locations(self.dock_offsets, self.location)
-    self.new_dock_locations = self.dock_locations
-    self.dock_locations_over_time = [self.dock_locations.copy()]
-
-  def reset_to_rotation(self, rotation):
-    self.location = self.start_location
-    self.rotation = rotation
     temperature = 298
     boltzmann = 1.380649e-23
     viscocity = 8.9e-4
@@ -104,32 +87,44 @@ class Molecule:
     return result
 
 class Ligand(Molecule):
-  def __init__(self, location, radius, rotation, n_docks):
-    super().__init__(location, radius, rotation, n_docks)
+  def __init__(self, location, radius, rotation, dock_rotations):
+    super().__init__(location, radius, rotation, dock_rotations)
   
   def get_dock_offsets(self):
-    dock_offsets_1 = np.array(([-8.5, 8.5, self.radius], [8.5, 8.5, self.radius], [-8.5, -8.5, self.radius], [8.5, -8.5, self.radius]))
-    #dock_offsets_2 = np.array(([8.5, -8.5, -1*self.radius], [8.5, 8.5, -1*self.radius], [-8.5, -8.5, -1*self.radius], [8.5, -8.5, -1*self.radius]))
-    dock_offsets_2 = np.array(([self.radius, -8.5, 8.5], [self.radius, 8.5, 8.5], [self.radius, -8.5, -8.5], [self.radius, 8.5, -8.5]))
-    dock_list = np.concatenate((dock_offsets_1, dock_offsets_2))
-    self.dock_offsets = dock_list[:self.n_docks]
+    dock_offset_template = np.array(([-8.5, 8.5, self.radius], [8.5, 8.5, self.radius], [-8.5, -8.5, self.radius], [8.5, -8.5, self.radius]))
+    region_spots = dock_offset_template.shape[0]
+    self.dock_offsets = np.zeros((self.n_docks*region_spots, 3))
+    ii = 0
+    for dock_rotation in self.dock_rotations:
+      r = get_R(dock_rotation[0], dock_rotation[1], dock_rotation[2])
+      offsets = multiply_R(r, dock_offset_template)
+      self.dock_offsets[ii:ii+region_spots, :] = offsets
+      ii += region_spots
 
 class Substrate(Molecule):
-  def __init__(self, location, radius, rotation, n_docks):
-    super().__init__(location, radius, rotation, n_docks)
+  def __init__(self, location, radius, rotation, dock_rotations):
+    super().__init__(location, radius, rotation, dock_rotations)
   def get_dock_offsets(self):
-    dock_offsets_1 = np.array(([8.5, 8.5, self.radius], [-8.5, 8.5, self.radius], [8.5, -8.5, self.radius], [-8.5, -8.5, self.radius]))
-    dock_list = np.concatenate((dock_offsets_1, dock_offsets_1))
-    self.dock_offsets = dock_list[:self.n_docks]
+    dock_offset_template = np.array(([8.5, 8.5, self.radius], [-8.5, 8.5, self.radius], [8.5, -8.5, self.radius], [-8.5, -8.5, self.radius]))
+    region_spots = dock_offset_template.shape[0]
+    self.dock_offsets = np.zeros((self.n_docks*region_spots, 3))
+    ii = 0
+    for dock_rotation in self.dock_rotations:
+      self.dock_offsets[ii:ii+region_spots, :] = dock_offset_template
+      ii += region_spots
 
 class FixedSubstrate(Molecule):
-  def __init__(self, location, radius, rotation, n_docks):
-    super().__init__(location, radius, rotation, n_docks)
+  def __init__(self, location, radius, rotation, dock_rotations):
+    super().__init__(location, radius, rotation, dock_rotations)
 
   def get_dock_offsets(self):
-    dock_offsets_1 = np.array(([8.5, 8.5, self.radius], [-8.5, 8.5, self.radius], [8.5, -8.5, self.radius], [-8.5, -8.5, self.radius]))
-    dock_list = np.concatenate((dock_offsets_1, dock_offsets_1))
-    self.dock_offsets = dock_list[:self.n_docks]
+    dock_offset_template = np.array(([8.5, 8.5, self.radius], [-8.5, 8.5, self.radius], [8.5, -8.5, self.radius], [-8.5, -8.5, self.radius]))
+    region_spots = dock_offset_template.shape[0]
+    self.dock_offsets = np.zeros((self.n_docks*region_spots, 3))
+    ii = 0
+    for dock_rotation in self.dock_rotations:
+      self.dock_offsets[ii:ii+region_spots, :] = dock_offset_template
+      ii += region_spots
 
   def attempt_move(self, dt):
     self.new_location = self.location

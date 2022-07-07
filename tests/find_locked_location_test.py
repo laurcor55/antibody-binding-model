@@ -10,38 +10,31 @@ import matplotlib.pyplot as plt
 
 class ReactionTestCase(unittest.TestCase):
   def setUp(self):
-    self.molecules_1 = [mol.Substrate([50, 50, 50], 9, [0, 0, 0]), mol.Ligand([50, 66, 66], 7, [0, np.pi, -np.pi/2])]
+    radius = 18
+    ligand_location = [0, 40, 37]
+    substrate_location_2 = [0, 50, 0]
 
-    self.molecules_2 = [mol.FixedSubstrate([50, 50, 50], 9, [0, 0, 0]), mol.Ligand([50, 66, 66], 7, [0, np.pi, -np.pi/2])]
+    ligand_orientation = [0, np.pi, np.pi/6]
+    substrate_orientation = [0, 0, 0]
+    dock_rotations = [[0, 0, 0], [0, np.pi, 0]]
+
+    self.ligand_1 = mol.Ligand(ligand_location, radius, ligand_orientation, dock_rotations)
+    self.substrate_1 = mol.FixedSubstrate(substrate_location_2, radius, substrate_orientation, dock_rotations)
 
   def test_find_locked_location(self):
     rend = 1000
     minimum_binding_docks = 3
 
-    self.reaction = reac.Reaction(self.molecules_1, rend, minimum_binding_docks)
-    substrate = self.molecules_1[0]
-    ligand = self.molecules_1[1]
-    self.reaction.find_locked_location(substrate, ligand)
-    self.reaction.check_reaction_status()
-    self.assertEqual(self.reaction.end_reaction, True, 'reaction ended early')
-    self.assertEqual(self.reaction.binding, True, 'reaction bound early')
-    self.assertEqual(self.reaction.molecules[0].binding_partner, 2, 'wrong binding_parter')
-    self.assertEqual(self.reaction.molecules[1].binding_partner, 1, 'wrong binding_parter')
-    self.assertEqual(self.reaction.molecules[0].locked_partner, 2, 'wrong locked_parter')
-    self.assertEqual(self.reaction.molecules[1].locked_partner, 1, 'wrong locked_parter')
+    self.reaction = reac.Reaction(self.ligand_1, [self.substrate_1], rend, minimum_binding_docks)
+    self.reaction.find_locked_location(self.substrate_1, self.ligand_1)
+    print(self.reaction.substrates[0].new_location)
+    print(self.reaction.ligand.new_location)
+    print(self.reaction.ligand.location)
 
-    self.reaction = reac.Reaction(self.molecules_2, rend, minimum_binding_docks)
-    substrate = self.molecules_2[0]
-    ligand = self.molecules_2[1]
-    self.reaction.find_locked_location(substrate, ligand)
-    self.reaction.check_reaction_status()
-    self.assertEqual(self.reaction.end_reaction, True, 'reaction ended early')
-    self.assertEqual(self.reaction.binding, True, 'reaction bound early')
-    self.assertEqual(self.reaction.molecules[0].binding_partner, 2, 'wrong binding_parter')
-    self.assertEqual(self.reaction.molecules[1].binding_partner, 1, 'wrong binding_parter')
-    self.assertEqual(self.reaction.molecules[0].locked_partner, 2, 'wrong locked_parter')
-    self.assertEqual(self.reaction.molecules[1].locked_partner, 1, 'wrong locked_parter')
-    
+    if self.reaction.ligand.new_location == self.reaction.ligand.location:
+      print('hi')
+
+
 def suite():
   suite = unittest.TestSuite()
   suite.addTest(ReactionTestCase('test_find_locked_location'))
