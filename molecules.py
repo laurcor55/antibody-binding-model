@@ -8,15 +8,15 @@ import time
 class Molecule:
   def __init__(self, location, radius, rotation, dock_rotations):
     self.start_location = np.array(location, float)
-    self.start_rotation = rotation
+    self.start_rotation = np.array(rotation, float)
     self.radius = radius
     self.dock_rotations = dock_rotations
     self.n_docks = len(dock_rotations)
-    self.back_to_start()
+    self.back_to_location_rotation(self.start_location, self.start_rotation)
 
-  def back_to_start(self):
-    self.location = self.start_location
-    self.rotation = self.start_rotation
+  def back_to_location_rotation(self, location, rotation):
+    self.location = location
+    self.rotation = rotation
     temperature = 298
     boltzmann = 1.380649e-23
     viscocity = 8.9e-4
@@ -50,7 +50,7 @@ class Molecule:
     self.R = self.new_R
     self.dock_offsets = self.new_dock_offsets
     self.dock_locations = self.new_dock_locations
-   # self.location_over_time.append(self.location.copy())    
+    #self.location_over_time.append(self.location.copy())    
     #self.dock_locations_over_time.append(self.dock_locations.copy())
   
   def move_back(self):
@@ -83,7 +83,7 @@ class Molecule:
     ax.plot_surface(x + self.location_over_time[t_step][0], y + self.location_over_time[t_step][1], z + self.location_over_time[t_step][2], color='r', alpha=0.3)
   
   def status(self):
-    result = {'type': str(type(self)), 'n_docks': self.n_docks, 'radius': self.radius, 'rotation': self.rotation, 'location': self.location.tolist()}
+    result = {'type': str(type(self)), 'n_docks': self.n_docks, 'radius': self.radius, 'rotation': self.rotation.tolist(), 'location': self.location.tolist()}
     return result
 
 class Ligand(Molecule):
@@ -131,7 +131,6 @@ class FixedSubstrate(Molecule):
     self.new_R = self.R
     self.new_dock_offsets = self.dock_offsets
     self.new_dock_locations = self.dock_locations
-
 
 def calculate_distance(location_1, location_2):
   return np.linalg.norm(location_1 - location_2) 

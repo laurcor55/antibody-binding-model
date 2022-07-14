@@ -81,34 +81,29 @@ def run_reactions(file_name, substrates, ligand):
     append_output(output_list, file_name)
   else:
     write_output(output_list, file_name)
-
   
-file_name = 'figures/7-8-22/output_all_random.json'
+file_name = 'figures/7-12-22/output_all_random.json'
 
 radius = 18 # angstroms
-z_spacings = [42]
+z_spacing = 42
 degs = [0]
-substrate_spacing = 36
+substrate_spacing = 36+15
 dock_rotations = [[0, 0, 0]]#, [0, np.pi/4, 0]]
 
-for z_spacing in z_spacings:
-  for deg in degs:
-    ligand_location = [0, 0, z_spacing]
-    substrate_location = [0, 0, 0]
-    substrate_location_2 = [0, substrate_spacing, 0]
-    substrate_location_3 = [0, -substrate_spacing, 0]
-    substrate_location_4 = [substrate_spacing, 0, 0]
-    substrate_location_5 = [-substrate_spacing, 0, 0]
-    substrate_location_6 = [substrate_spacing, substrate_spacing, 0]
-    substrate_location_7 = [-substrate_spacing, -substrate_spacing, 0]
-    substrate_location_8 = [-substrate_spacing, substrate_spacing, 0]
-    substrate_location_9 = [substrate_spacing, -substrate_spacing, 0]
+ligand_location = [0, 0, z_spacing]
+substrate_location = [0, 0, 0]
+substrate_location_2 = [0, substrate_spacing, 0]
+substrate_location_3 = [0, -substrate_spacing, 0]
+substrate_location_4 = [substrate_spacing, 0, 0]
+substrate_location_5 = [-substrate_spacing, 0, 0]
+substrate_location_6 = [substrate_spacing, substrate_spacing, 0]
+substrate_location_7 = [-substrate_spacing, -substrate_spacing, 0]
+substrate_location_8 = [-substrate_spacing, substrate_spacing, 0]
+substrate_location_9 = [substrate_spacing, -substrate_spacing, 0]
 
-    
+substrates_start = [mol.FixedSubstrate(substrate_location, radius, [np.random.rand()*np.pi*2, 0, 0], dock_rotations), mol.FixedSubstrate(substrate_location_2, radius, [np.random.rand()*np.pi*2, 0, 0], dock_rotations), mol.FixedSubstrate(substrate_location_3, radius, [np.random.rand()*np.pi*2, 0, 0], dock_rotations), mol.FixedSubstrate(substrate_location_4, radius, [np.random.rand()*np.pi*2, 0, 0], dock_rotations), mol.FixedSubstrate(substrate_location_5, radius, [np.random.rand()*np.pi*2, 0, 0], dock_rotations), mol.FixedSubstrate(substrate_location_6, radius, [np.random.rand()*np.pi*2, 0, 0], dock_rotations), mol.FixedSubstrate(substrate_location_7, radius, [np.random.rand()*np.pi*2, 0, 0], dock_rotations), mol.FixedSubstrate(substrate_location_8, radius, [np.random.rand()*np.pi*2, 0, 0], dock_rotations), mol.FixedSubstrate(substrate_location_9, radius, [np.random.rand()*np.pi*2, 0, 0], dock_rotations)]
 
-    substrates_start = [mol.FixedSubstrate(substrate_location, radius, [np.random.rand()*np.pi*2, 0, 0], dock_rotations), mol.FixedSubstrate(substrate_location_2, radius, [np.random.rand()*np.pi*2, 0, 0], dock_rotations), mol.FixedSubstrate(substrate_location_3, radius, [np.random.rand()*np.pi*2, 0, 0], dock_rotations), mol.FixedSubstrate(substrate_location_4, radius, [np.random.rand()*np.pi*2, 0, 0], dock_rotations), mol.FixedSubstrate(substrate_location_5, radius, [np.random.rand()*np.pi*2, 0, 0], dock_rotations), mol.FixedSubstrate(substrate_location_6, radius, [np.random.rand()*np.pi*2, 0, 0], dock_rotations), mol.FixedSubstrate(substrate_location_7, radius, [np.random.rand()*np.pi*2, 0, 0], dock_rotations), mol.FixedSubstrate(substrate_location_8, radius, [np.random.rand()*np.pi*2, 0, 0], dock_rotations), mol.FixedSubstrate(substrate_location_9, radius, [np.random.rand()*np.pi*2, 0, 0], dock_rotations)]
+ligand_orientation = [substrates_start[0].start_rotation[0], np.pi, 0]
+ligand_start = mol.Ligand(ligand_location, radius, ligand_orientation, dock_rotations)
 
-    ligand_orientation = [substrates_start[0].start_rotation[0], np.pi, 0]
-    ligand_start = mol.Ligand(ligand_location, radius, ligand_orientation, dock_rotations)
-    
-    run_reactions(file_name, substrates_start, ligand_start)
+run_reactions(file_name, substrates_start, ligand_start)
