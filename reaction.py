@@ -72,27 +72,25 @@ class Reaction:
     distance = self.minimum_substrate_ligand_dock_distance *1e-10 # meters
     lamda = 5
     self.dt = 1/(12*self.ligand.D)*(distance/lamda)**2
- 
-  def show_animation(self):
-    self.fig = plt.figure()
-    self.slider_ax = plt.axes([0.15, 0.05, 0.75, 0.05])
-    
-    self.ax = p3.Axes3D(self.fig, [0, 0.1, 1, 1])
+  
+  def show_animation(self, figure):
+    self.ax = p3.Axes3D(figure, [0, 0.1, 1, 1])
+    self.slider_ax = figure.add_axes([0.15, 0.05, 0.75, 0.05])
     t_steps = len(self.ligand.location_over_time)
     self.slider = Slider(self.slider_ax, label='t-step', valmin=0, valmax=t_steps-1, valinit=t_steps-1)
     self.slider.on_changed(self.update_slider)
-    self.show_molecules_at_time(t_steps-1)
+    self.show_molecules_at_time(self.ax, t_steps-1)
     plt.show()
   
   def update_slider(self, val):
     t_step = round(self.slider.val)
-    self.show_molecules_at_time(t_step)
+    self.show_molecules_at_time(self.ax, t_step)
 
-  def show_molecules_at_time(self, t_step):
-    self.ax.clear()
+  def show_molecules_at_time(self, ax, t_step):
+    ax.clear()
     for substrate in self.substrates:
-      substrate.plot(self.ax, t_step)
-    self.ligand.plot(self.ax, t_step)
+      substrate.plot(ax, t_step)
+    self.ligand.plot(ax, t_step)
   
   def step_reaction(self):
     self.find_new_molecule_locations()

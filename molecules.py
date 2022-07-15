@@ -50,8 +50,8 @@ class Molecule:
     self.R = self.new_R
     self.dock_offsets = self.new_dock_offsets
     self.dock_locations = self.new_dock_locations
-    #self.location_over_time.append(self.location.copy())    
-    #self.dock_locations_over_time.append(self.dock_locations.copy())
+    self.location_over_time.append(self.location.copy())    
+    self.dock_locations_over_time.append(self.dock_locations.copy())
   
   def move_back(self):
     self.new_location = self.location
