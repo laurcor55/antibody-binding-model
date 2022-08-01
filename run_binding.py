@@ -38,8 +38,6 @@ def calculate_kon(binding_count, total_count, ligand, substrates, rstart, rend):
   return reac.scientific(k)
 
 def run_reactions(file_name, substrates, ligand):
-  ligand_location_start = ligand.location
-  substrates_location_start = [substrate.location for substrate in substrates]
   minimum_binding_docks = 3
   total_count = 1
   rend = 200 #angstroms
@@ -82,33 +80,33 @@ def run_reactions(file_name, substrates, ligand):
   else:
     write_output(output_list, file_name)
 
-  
-file_name = 'figures/7-8-22/output_all_random.json'
+if __name__ == "__main__":
+  file_name = 'figures/7-8-22/output_all_random.json'
 
-radius = 18 # angstroms
-z_spacings = [42]
-degs = [0]
-substrate_spacing = 36
-dock_rotations = [[0, 0, 0]]#, [0, np.pi/4, 0]]
+  radius = 18 # angstroms
+  z_spacings = [42]
+  degs = [0]
+  substrate_spacing = 36
+  dock_rotations = [[0, 0, 0]]#, [0, np.pi/4, 0]]
 
-for z_spacing in z_spacings:
-  for deg in degs:
-    ligand_location = [0, 0, z_spacing]
-    substrate_location = [0, 0, 0]
-    substrate_location_2 = [0, substrate_spacing, 0]
-    substrate_location_3 = [0, -substrate_spacing, 0]
-    substrate_location_4 = [substrate_spacing, 0, 0]
-    substrate_location_5 = [-substrate_spacing, 0, 0]
-    substrate_location_6 = [substrate_spacing, substrate_spacing, 0]
-    substrate_location_7 = [-substrate_spacing, -substrate_spacing, 0]
-    substrate_location_8 = [-substrate_spacing, substrate_spacing, 0]
-    substrate_location_9 = [substrate_spacing, -substrate_spacing, 0]
+  for z_spacing in z_spacings:
+    for deg in degs:
+      ligand_location = [0, 0, z_spacing]
+      substrate_location = [0, 0, 0]
+      substrate_location_2 = [0, substrate_spacing, 0]
+      substrate_location_3 = [0, -substrate_spacing, 0]
+      substrate_location_4 = [substrate_spacing, 0, 0]
+      substrate_location_5 = [-substrate_spacing, 0, 0]
+      substrate_location_6 = [substrate_spacing, substrate_spacing, 0]
+      substrate_location_7 = [-substrate_spacing, -substrate_spacing, 0]
+      substrate_location_8 = [-substrate_spacing, substrate_spacing, 0]
+      substrate_location_9 = [substrate_spacing, -substrate_spacing, 0]
 
-    
+      
 
-    substrates_start = [mol.FixedSubstrate(substrate_location, radius, [np.random.rand()*np.pi*2, 0, 0], dock_rotations), mol.FixedSubstrate(substrate_location_2, radius, [np.random.rand()*np.pi*2, 0, 0], dock_rotations), mol.FixedSubstrate(substrate_location_3, radius, [np.random.rand()*np.pi*2, 0, 0], dock_rotations), mol.FixedSubstrate(substrate_location_4, radius, [np.random.rand()*np.pi*2, 0, 0], dock_rotations), mol.FixedSubstrate(substrate_location_5, radius, [np.random.rand()*np.pi*2, 0, 0], dock_rotations), mol.FixedSubstrate(substrate_location_6, radius, [np.random.rand()*np.pi*2, 0, 0], dock_rotations), mol.FixedSubstrate(substrate_location_7, radius, [np.random.rand()*np.pi*2, 0, 0], dock_rotations), mol.FixedSubstrate(substrate_location_8, radius, [np.random.rand()*np.pi*2, 0, 0], dock_rotations), mol.FixedSubstrate(substrate_location_9, radius, [np.random.rand()*np.pi*2, 0, 0], dock_rotations)]
+      substrates_start = [mol.FixedSubstrate(substrate_location, radius, [np.random.rand()*np.pi*2, 0, 0], dock_rotations)]#, mol.FixedSubstrate(substrate_location_2, radius, [np.random.rand()*np.pi*2, 0, 0], dock_rotations), mol.FixedSubstrate(substrate_location_3, radius, [np.random.rand()*np.pi*2, 0, 0], dock_rotations), mol.FixedSubstrate(substrate_location_4, radius, [np.random.rand()*np.pi*2, 0, 0], dock_rotations), mol.FixedSubstrate(substrate_location_5, radius, [np.random.rand()*np.pi*2, 0, 0], dock_rotations), mol.FixedSubstrate(substrate_location_6, radius, [np.random.rand()*np.pi*2, 0, 0], dock_rotations), mol.FixedSubstrate(substrate_location_7, radius, [np.random.rand()*np.pi*2, 0, 0], dock_rotations), mol.FixedSubstrate(substrate_location_8, radius, [np.random.rand()*np.pi*2, 0, 0], dock_rotations), mol.FixedSubstrate(substrate_location_9, radius, [np.random.rand()*np.pi*2, 0, 0], dock_rotations)]
 
-    ligand_orientation = [substrates_start[0].start_rotation[0], np.pi, 0]
-    ligand_start = mol.Ligand(ligand_location, radius, ligand_orientation, dock_rotations)
-    
-    run_reactions(file_name, substrates_start, ligand_start)
+      ligand_orientation = [substrates_start[0].start_rotation[0], np.pi, 0]
+      ligand_start = mol.Ligand(ligand_location, radius, ligand_orientation, dock_rotations)
+      
+      run_reactions(file_name, substrates_start, ligand_start)

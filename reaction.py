@@ -29,7 +29,7 @@ class Reaction:
     self.time = 0
     self.reaction_status = 'free'
     self.subsrates = [substrate.back_to_location_rotation(substrate.start_location, substrate.start_rotation) for substrate in self.substrates]
-    self.ligand.back_to_location_rotation(self.ligand.start_location, [np.random.rand()*np.pi*2, np.random.rand()*np.pi*2, np.random.rand()*np.pi*2])
+    self.ligand.back_to_location_rotation(self.ligand.start_location, self.ligand.start_rotation)
     self.calculate_dt()
     self.check_molecule_status()
 
