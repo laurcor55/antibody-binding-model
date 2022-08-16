@@ -11,6 +11,7 @@ class Molecule:
     self.start_rotation = np.array(rotation, float)
     self.radius = radius
     self.dock_rotations = dock_rotations
+    self.save_preview = True
     self.n_docks = len(dock_rotations)
     self.back_to_location_rotation(self.start_location, self.start_rotation)
 
@@ -50,8 +51,9 @@ class Molecule:
     self.R = self.new_R
     self.dock_offsets = self.new_dock_offsets
     self.dock_locations = self.new_dock_locations
-    self.location_over_time.append(self.location.copy())    
-    self.dock_locations_over_time.append(self.dock_locations.copy())
+    if self.save_preview:
+      self.location_over_time.append(self.location.copy())    
+      self.dock_locations_over_time.append(self.dock_locations.copy())
   
   def move_back(self):
     self.new_location = self.location

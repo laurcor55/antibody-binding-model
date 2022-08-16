@@ -15,6 +15,8 @@ sys.path.insert(1, '../')
 import reaction as reac
 import molecules as mol
 import numpy as np
+import time
+import copy
 
 class BrownianDynamics():
   def __init__(self, root):
@@ -30,6 +32,7 @@ class BrownianDynamics():
     style = ttk.Style()
     style.configure('TFrame', background='green')
     self.create_input_frame()
+    self.create_progress_frame()
     self.create_output_frame()
 
   def create_default_reaction(self):
@@ -69,10 +72,7 @@ class BrownianDynamics():
     
     self.create_input_figure()
     self.create_input_values()
-    self.input_frame.grid(row=0, column=0)
-    
-    self.start_button = tk.Button(self.input_frame, text='Start Reaction', command=self.run_reaction)
-    self.start_button.pack()
+    self.input_frame.grid(row=0, column=0, rowspan=7)
 
     self.preview_button = tk.Button(self.input_frame, text='Preview Settings', command=self.apply_settings)
     self.preview_button.pack()
@@ -82,7 +82,21 @@ class BrownianDynamics():
     tk.Label(self.output_frame, text='Output').pack(padx=10, pady=10)
     
     self.create_output_figure()
-    self.output_frame.grid(row=0, column=1, sticky='n')
+    self.output_frame.grid(row=5, column=1, sticky='n', rowspan=7)
+  
+  def create_progress_frame(self):
+    self.progress_frame = ttk.Frame(padding=(20, 20))
+    tk.Label(self.progress_frame, text='Reaction Progress').pack(padx=10, pady=10)
+    
+    self.start_button = tk.Button(self.progress_frame, text='Start Reaction', command=self.run_reactions)
+    self.start_button.pack()
+
+    self.stop_button = tk.Button(self.progress_frame, text='Stop Reaction', command=self.stop_reactions)
+    self.stop_button.pack()
+
+    self.progress_bar = ttk.Progressbar(self.progress_frame, orient='horizontal', mode='determinate', length=280)
+    self.progress_bar.pack()
+    self.progress_frame.grid(row=0, column=1, sticky='n', rowspan=5)
 
   
   def create_input_values(self):
@@ -91,7 +105,7 @@ class BrownianDynamics():
     
     self.create_ligand_input()
     self.create_substrates_input()
-
+    self.create_reaction_count_input()
   
   def create_ligand_input(self):
     ligand_tab_frame = ttk.Frame(self.input_tab_control)#, width=400, height=280)
@@ -127,6 +141,16 @@ class BrownianDynamics():
     self.substrate_spacing_sv = tk.StringVar(self.root, value=str(np.sum(np.abs(self.reaction.substrates[0].location - self.reaction.substrates[1].location))))
     substrate_spacing_entry = tk.Entry(substrates_tab_frame, textvariable=self.substrate_spacing_sv)
     substrate_spacing_entry.grid(row=1, column=1)
+
+  def create_reaction_count_input(self):
+    reaction_count_tab_frame = ttk.Frame(self.input_tab_control)#, width=400, height=280)
+    reaction_count_tab_frame.pack()#fill='both', expand=True)
+    self.input_tab_control.add(reaction_count_tab_frame, text='Reaction Count')
+    
+    tk.Label(reaction_count_tab_frame, text="Total Reactions").grid(row=0, column=0, columnspan=2)
+    self.reaction_count_sv = tk.StringVar(self.root, value='1000')
+    reaction_count_entry = tk.Entry(reaction_count_tab_frame, textvariable=self.reaction_count_sv, width=10)
+    reaction_count_entry.grid(row=0, column=3)
    
   def apply_settings(self):
     ligand_location = [0, 0, 42]
@@ -134,20 +158,55 @@ class BrownianDynamics():
     for ii in range(3):
       ligand_location[ii] = float(self.ligand_location_sv[ii].get())
       ligand_orientation[ii] = float(self.ligand_rotation_sv[ii].get())*0.0174533
-    
+    self.reaction_count = int(self.reaction_count_sv.get())
     dock_rotations = [[0, 0, 0]]
     radius = 18
     rend = 200
     minimum_binding_docks = 3
-    ligand = mol.Ligand(ligand_location, radius, ligand_orientation, dock_rotations)
+    self.ligand = mol.Ligand(ligand_location, radius, ligand_orientation, dock_rotations)
 
     substrate_spacing = float(self.substrate_spacing_sv.get())
     n_substrates = int(self.n_substrates_sv.get())
-    substrates = self.create_substrates(n_substrates, substrate_spacing)
+    self.substrates = self.create_substrates(n_substrates, substrate_spacing)
 
-    self.reaction = reac.Reaction(ligand, substrates, rend, minimum_binding_docks)
+    self.reaction = reac.Reaction(self.ligand, self.substrates, rend, minimum_binding_docks)
     self.reaction.back_to_start()
     self.reaction.show_molecules_at_time(self.start_view_axis, 0)
+  
+  def stop_reactions(self):
+    global running
+    running = False
+  
+  def run_reactions(self):
+    self.apply_settings()
+    global running
+    running = True
+    total_count = self.reaction_count
+    binding_count = 0
+    seed = int(time.time())
+    np.random.seed(seed)
+    kk = 0
+    center_binding_count = 0
+    #while binding_count < 40:
+    while kk < total_count and running:
+      self.reaction.back_to_start()
+      self.reaction.progress_reaction()
+      if self.reaction.reaction_status == 'binding':
+        binding_count += 1
+        if binding_count == 1:
+          self.reaction_copy = copy.deepcopy(self.reaction)
+          self.output_figure.clf()
+          self.reaction_copy.show_animation(self.output_figure)
+          self.reaction_view_canvas.draw()
+          self.reaction.no_save_preview()
+        if (self.reaction.substrates[0].locked == True):
+          center_binding_count += 1
+      if kk % 10 ==0:
+        print(str(kk) + ' of ' + str(total_count) + ', ' + str(binding_count) + ' bound (' + reac.scientific(binding_count/(kk+1)) + '), ', end="\r")
+        self.progress_bar['value'] = kk/total_count*100
+        self.root.update()
+      kk += 1
+    print(str(kk) + ' of ' + str(total_count) + ', ' + str(binding_count) + ' bound (' + reac.scientific(binding_count/(kk)) + '), ', end="\r")
 
   def create_input_figure(self):
     fig = Figure(figsize=(5, 5), dpi=100)

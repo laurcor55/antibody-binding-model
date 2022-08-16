@@ -9,7 +9,7 @@ from matplotlib.widgets import Slider
 import time
 import numba as nb
 from numba import jit
-
+import copy
 
 class Reaction:
   def __init__(self, ligand, substrates, rend, minimum_binding_docks):
@@ -24,6 +24,12 @@ class Reaction:
     self.check_molecule_status()
     self.calculate_dt()
   
+  def __deepcopy__(self, memodict={}):
+    new_instance = Reaction(self.ligand, self.substrates, self.rend, self.minimum_binding_docks)
+    new_instance.ligand = copy.deepcopy(self.ligand, memodict)
+    new_instance.substrates = copy.deepcopy(self.substrates, memodict)
+    return new_instance
+
   def back_to_start(self):
     self.end_reaction = False
     self.time = 0
@@ -32,6 +38,11 @@ class Reaction:
     self.ligand.back_to_location_rotation(self.ligand.start_location, self.ligand.start_rotation)
     self.calculate_dt()
     self.check_molecule_status()
+  
+  def no_save_preview(self):
+    self.ligand.save_preview = False
+    for substrate in self.substrates:
+      substrate.save_preview = False 
 
   def reset_molecules_to_rotation(self):
     self.end_reaction = False
