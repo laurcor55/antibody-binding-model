@@ -30,7 +30,9 @@ class BrownianDynamics():
     self.root.columnconfigure(1, weight=1)
 
     style = ttk.Style()
-    style.configure('TFrame', background='green')
+    #style.configure('TFrame', background='green')
+    #style.configure('TFrame', background='gray')
+
     self.create_input_frame()
     self.create_progress_frame()
     self.create_output_frame()
@@ -74,7 +76,7 @@ class BrownianDynamics():
     
     self.create_input_figure()
     self.create_input_values()
-    self.input_frame.grid(row=0, column=0, rowspan=8)
+    self.input_frame.grid(row=0, column=0, rowspan=6)
 
     self.preview_button = tk.Button(self.input_frame, text='Preview Settings', command=self.apply_settings)
     self.preview_button.pack()
@@ -91,7 +93,7 @@ class BrownianDynamics():
 
     self.progress_bar = ttk.Progressbar(self.progress_frame, orient='horizontal', mode='determinate', length=280)
     self.progress_bar.pack()
-    self.progress_frame.grid(row=8, column=0, sticky='n', rowspan=1)
+    self.progress_frame.grid(row=6, column=0, sticky='n', rowspan=1)
       
   def create_output_frame(self):
     self.output_frame = ttk.Frame(padding=(20, 20))
@@ -253,11 +255,12 @@ class BrownianDynamics():
     
     output_text_frame.pack()
     self.output_text = tk.StringVar()
-    self.output_text.set("Total reactions run: " + str(self.total_reactions_run))
+    text = "Total reactions run: " + str(self.total_reactions_run) + '\nTotal binding: ' + str(self.binding_count) + '\nBinding proportion: '
+    self.output_text.set(text)
     tk.Label(output_text_frame, textvariable=self.output_text).grid(row=0, column=0, columnspan=2)
   
   def update_output_text(self):
-    text = "Total reactions run: " + str(self.total_reactions_run)
+    text = "Total reactions run: " + str(self.total_reactions_run) + '\nTotal binding: ' + str(self.binding_count) + '\nBinding proportion: ' + reac.scientific(self.binding_count/self.total_reactions_run) 
     self.output_text.set(text)
 
 if __name__ == '__main__':
