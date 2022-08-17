@@ -48,6 +48,8 @@ class BrownianDynamics():
     ligand = mol.Ligand(ligand_location, radius, ligand_orientation, dock_rotations)
     substrates = self.create_substrates(n_substrates, substrate_spacing)
     self.reaction = reac.Reaction(ligand, substrates, rend, minimum_binding_docks)
+    self.total_reactions_run = 0
+    self.binding_count = 0
 
   def create_substrates(self, n_substrates, substrate_spacing):
     substrate_location = [0, 0, 0]
@@ -72,18 +74,11 @@ class BrownianDynamics():
     
     self.create_input_figure()
     self.create_input_values()
-    self.input_frame.grid(row=0, column=0, rowspan=7)
+    self.input_frame.grid(row=0, column=0, rowspan=8)
 
     self.preview_button = tk.Button(self.input_frame, text='Preview Settings', command=self.apply_settings)
     self.preview_button.pack()
-      
-  def create_output_frame(self):
-    self.output_frame = ttk.Frame(padding=(20, 20))
-    tk.Label(self.output_frame, text='Output').pack(padx=10, pady=10)
-    
-    self.create_output_figure()
-    self.output_frame.grid(row=5, column=1, sticky='n', rowspan=7)
-  
+
   def create_progress_frame(self):
     self.progress_frame = ttk.Frame(padding=(20, 20))
     tk.Label(self.progress_frame, text='Reaction Progress').pack(padx=10, pady=10)
@@ -96,8 +91,17 @@ class BrownianDynamics():
 
     self.progress_bar = ttk.Progressbar(self.progress_frame, orient='horizontal', mode='determinate', length=280)
     self.progress_bar.pack()
-    self.progress_frame.grid(row=0, column=1, sticky='n', rowspan=5)
+    self.progress_frame.grid(row=8, column=0, sticky='n', rowspan=1)
+      
+  def create_output_frame(self):
+    self.output_frame = ttk.Frame(padding=(20, 20))
+    tk.Label(self.output_frame, text='Output').pack(padx=10, pady=10)
+    
+    self.create_output_figure()
+    self.output_frame.grid(row=0, column=1, sticky='n', rowspan=7)
 
+    self.create_output_text()
+  
   
   def create_input_values(self):
     self.input_tab_control = ttk.Notebook(self.input_frame)
@@ -176,11 +180,18 @@ class BrownianDynamics():
   def stop_reactions(self):
     global running
     running = False
-  
+
+  def end_reaction_updates(self):
+    self.update_output_text()
+    if not hasattr(self, 'reaction_copy'):
+      self.set_animation()
+    
   def run_reactions(self):
     self.apply_settings()
     global running
     running = True
+    if hasattr(self, 'reaction_copy'):
+      del self.reaction_copy
     total_count = self.reaction_count
     binding_count = 0
     seed = int(time.time())
@@ -194,10 +205,7 @@ class BrownianDynamics():
       if self.reaction.reaction_status == 'binding':
         binding_count += 1
         if binding_count == 1:
-          self.reaction_copy = copy.deepcopy(self.reaction)
-          self.output_figure.clf()
-          self.reaction_copy.show_animation(self.output_figure)
-          self.reaction_view_canvas.draw()
+          self.set_animation()
           self.reaction.no_save_preview()
         if (self.reaction.substrates[0].locked == True):
           center_binding_count += 1
@@ -206,7 +214,16 @@ class BrownianDynamics():
         self.progress_bar['value'] = kk/total_count*100
         self.root.update()
       kk += 1
+      self.total_reactions_run = kk
+      self.binding_count = binding_count
     print(str(kk) + ' of ' + str(total_count) + ', ' + str(binding_count) + ' bound (' + reac.scientific(binding_count/(kk)) + '), ', end="\r")
+    self.end_reaction_updates()
+
+  def set_animation(self):
+    self.reaction_copy = copy.deepcopy(self.reaction)
+    self.output_figure.clf()
+    self.reaction_copy.show_animation(self.output_figure)
+    self.reaction_view_canvas.draw()
 
   def create_input_figure(self):
     fig = Figure(figsize=(5, 5), dpi=100)
@@ -220,12 +237,6 @@ class BrownianDynamics():
     self.start_view_canvas.get_tk_widget().pack()
     input_figure_frame.pack()
 
-  def run_reaction(self):
-    self.reaction.back_to_start()
-    self.reaction.progress_reaction()
-    self.reaction.show_animation(self.output_figure)
-    self.reaction_view_canvas.draw()
-
   def create_output_figure(self):
     self.output_figure = Figure(figsize=(5, 6), dpi=100)
     self.reaction_view_axis = p3.Axes3D(self.output_figure, auto_add_to_figure=False)
@@ -236,6 +247,18 @@ class BrownianDynamics():
     self.reaction_view_canvas.draw()
     self.reaction_view_canvas.get_tk_widget().pack()
     output_figure_frame.pack()
+  
+  def create_output_text(self):
+    output_text_frame = tk.Frame(self.output_frame)
+    
+    output_text_frame.pack()
+    self.output_text = tk.StringVar()
+    self.output_text.set("Total reactions run: " + str(self.total_reactions_run))
+    tk.Label(output_text_frame, textvariable=self.output_text).grid(row=0, column=0, columnspan=2)
+  
+  def update_output_text(self):
+    text = "Total reactions run: " + str(self.total_reactions_run)
+    self.output_text.set(text)
 
 if __name__ == '__main__':
   root = tk.Tk()
