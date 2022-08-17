@@ -64,25 +64,7 @@ class Molecule:
   def set_id(self, id):
     self.id = id
 
-  def plot(self, ax, t_step):
-    limits = 100
-    ax.set_xlim3d(-limits, limits)
-    ax.set_ylim3d(-limits, limits)
-    ax.set_zlim3d(-limits, limits)
-    colors = ['b', 'g', 'r', 'c', 'b', 'g', 'r', 'c']
-    ii = 0
-    for dock_locations_over_time in self.dock_locations_over_time[t_step]:
-      x = np.array([self.location_over_time[t_step][0], dock_locations_over_time[0]])
-      y = np.array([self.location_over_time[t_step][1], dock_locations_over_time[1]])
-      z = np.array([self.location_over_time[t_step][2], dock_locations_over_time[2]])
-      ax.plot3D(x, y, z, color=colors[ii])
-      ii += 1
-
-    u, v = np.mgrid[0:2*np.pi:20j, 0:np.pi:10j]
-    x = np.cos(u)*np.sin(v) * self.radius
-    y = np.sin(u)*np.sin(v) * self.radius
-    z = np.cos(v) * self.radius
-    ax.plot_surface(x + self.location_over_time[t_step][0], y + self.location_over_time[t_step][1], z + self.location_over_time[t_step][2], color='r', alpha=0.3)
+  
   
   def status(self):
     result = {'type': str(type(self)), 'n_docks': self.n_docks, 'radius': self.radius, 'rotation': self.rotation.tolist(), 'location': self.location.tolist()}
@@ -102,6 +84,26 @@ class Ligand(Molecule):
       offsets = multiply_R(r, dock_offset_template)
       self.dock_offsets[ii:ii+region_spots, :] = offsets
       ii += region_spots
+  
+  def plot(self, ax, t_step):
+    limits = 100
+    ax.set_xlim3d(-limits, limits)
+    ax.set_ylim3d(-limits, limits)
+    ax.set_zlim3d(-limits, limits)
+    colors = ['b', 'g', 'r', 'c', 'b', 'g', 'r', 'c']
+    ii = 0
+    for dock_locations_over_time in self.dock_locations_over_time[t_step]:
+      x = np.array([self.location_over_time[t_step][0], dock_locations_over_time[0]])
+      y = np.array([self.location_over_time[t_step][1], dock_locations_over_time[1]])
+      z = np.array([self.location_over_time[t_step][2], dock_locations_over_time[2]])
+      ax.plot3D(x, y, z, color=colors[ii])
+      ii += 1
+
+    u, v = np.mgrid[0:2*np.pi:20j, 0:np.pi:10j]
+    x = np.cos(u)*np.sin(v) * self.radius
+    y = np.sin(u)*np.sin(v) * self.radius
+    z = np.cos(v) * self.radius
+    ax.plot_surface(x + self.location_over_time[t_step][0], y + self.location_over_time[t_step][1], z + self.location_over_time[t_step][2], color='r', alpha=0.3)
 
 class Substrate(Molecule):
   def __init__(self, location, radius, rotation, dock_rotations):
@@ -114,6 +116,26 @@ class Substrate(Molecule):
     for dock_rotation in self.dock_rotations:
       self.dock_offsets[ii:ii+region_spots, :] = dock_offset_template
       ii += region_spots
+  
+  def plot(self, ax, t_step):
+    limits = 100
+    ax.set_xlim3d(-limits, limits)
+    ax.set_ylim3d(-limits, limits)
+    ax.set_zlim3d(-limits, limits)
+    colors = ['b', 'g', 'r', 'c', 'b', 'g', 'r', 'c']
+    ii = 0
+    for dock_locations_over_time in self.dock_locations_over_time[t_step]:
+      x = np.array([self.location_over_time[t_step][0], dock_locations_over_time[0]])
+      y = np.array([self.location_over_time[t_step][1], dock_locations_over_time[1]])
+      z = np.array([self.location_over_time[t_step][2], dock_locations_over_time[2]])
+      ax.plot3D(x, y, z, color=colors[ii])
+      ii += 1
+
+    u, v = np.mgrid[0:2*np.pi:20j, 0:np.pi:10j]
+    x = np.cos(u)*np.sin(v) * self.radius
+    y = np.sin(u)*np.sin(v) * self.radius
+    z = np.cos(v) * self.radius
+    ax.plot_surface(x + self.location_over_time[t_step][0], y + self.location_over_time[t_step][1], z + self.location_over_time[t_step][2], color='b', alpha=0.3)
 
 class FixedSubstrate(Molecule):
   def __init__(self, location, radius, rotation, dock_rotations):
@@ -133,6 +155,26 @@ class FixedSubstrate(Molecule):
     self.new_R = self.R
     self.new_dock_offsets = self.dock_offsets
     self.new_dock_locations = self.dock_locations
+  
+  def plot(self, ax, t_step):
+    limits = 100
+    ax.set_xlim3d(-limits, limits)
+    ax.set_ylim3d(-limits, limits)
+    ax.set_zlim3d(-limits, limits)
+    colors = ['b', 'g', 'r', 'c', 'b', 'g', 'r', 'c']
+    ii = 0
+    for dock_locations_over_time in self.dock_locations_over_time[t_step]:
+      x = np.array([self.location_over_time[t_step][0], dock_locations_over_time[0]])
+      y = np.array([self.location_over_time[t_step][1], dock_locations_over_time[1]])
+      z = np.array([self.location_over_time[t_step][2], dock_locations_over_time[2]])
+      ax.plot3D(x, y, z, color=colors[ii])
+      ii += 1
+
+    u, v = np.mgrid[0:2*np.pi:20j, 0:np.pi:10j]
+    x = np.cos(u)*np.sin(v) * self.radius
+    y = np.sin(u)*np.sin(v) * self.radius
+    z = np.cos(v) * self.radius
+    ax.plot_surface(x + self.location_over_time[t_step][0], y + self.location_over_time[t_step][1], z + self.location_over_time[t_step][2], color='k', alpha=0.2)
 
 def calculate_distance(location_1, location_2):
   return np.linalg.norm(location_1 - location_2) 
