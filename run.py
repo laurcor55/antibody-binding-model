@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
 import matplotlib
-from pyparsing import col
 
 matplotlib.use('TkAgg')
 
@@ -11,7 +10,6 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolb
 import mpl_toolkits.mplot3d.axes3d as p3
 
 import sys
-sys.path.insert(1, '../')
 import reaction as reac
 import molecules as mol
 import numpy as np
@@ -21,7 +19,7 @@ import copy
 class BrownianDynamics():
   def __init__(self, root):
     self.root = root
-    self.root.geometry("1000x500")
+    self.root.geometry("1400x900")
     self.create_default_reaction()
     self.layout_app()
 
